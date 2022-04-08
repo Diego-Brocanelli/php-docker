@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysql:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'app'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
+  nginx:
+    build: ./nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - app
+
+  redis:
+    image: redis:alpine
+    expose:
+      - 6379
