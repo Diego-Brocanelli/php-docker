@@ -3,6 +3,7 @@ version: "3"
 services:
   app:
     build: .
+    container_name: app
     volumes:
       - ./app:/var/www/html
     depends_on:
@@ -11,6 +12,7 @@ services:
 
   mysql:
     image: mysql:8
+    container_name: mysql
     restart: always
     ports:
       - "3306:3306"
@@ -25,6 +27,7 @@ services:
 
   nginx:
     build: ./nginx
+    container_name: nginx
     restart: always
     ports:
       - "80:80"
@@ -35,5 +38,6 @@ services:
 
   redis:
     image: redis:alpine
+    container_name: redis
     expose:
       - 6379
