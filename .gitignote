@@ -1,3 +1,2 @@
-/app/vendor
-/app/node_modules
-/mysql
+/.idea
+/.vscode
