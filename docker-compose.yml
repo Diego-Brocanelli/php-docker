@@ -5,7 +5,7 @@ services:
     build: .
     container_name: app
     volumes:
-      - ./app:/var/www/html
+      - .:/var/www/html
     depends_on:
       - mysql
       - redis
@@ -17,7 +17,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "./mysql:/var/lib/mysql"
+      - "./docker/mysql:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_ROOT_HOST: "%"
@@ -26,13 +26,13 @@ services:
       MYSQL_PASSWORD: 'app'
 
   nginx:
-    build: ./nginx
+    build: ./docker/nginx
     container_name: nginx
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ./app:/var/www/html
+      - .:/var/www/html
     depends_on:
       - app
 
