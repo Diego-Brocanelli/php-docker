@@ -36,7 +36,7 @@ docker-compose up -d
     - docs
         - Responsável por conter todas as documentações do projeto.
     - src
-        - Responsável por conter todos os códigos do seu projeto.
+        - Responsável por conter todos os códigos do projeto.
     - tests
         - Responsável por conter todos os testes do projeto.
     .env
