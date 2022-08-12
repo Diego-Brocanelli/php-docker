@@ -53,6 +53,7 @@ Dentro do container terá acesso as tecnologias listadas abaixo.
 - PHPUnit;
 - PHPLoc
 - Composer;
+- composer-unused;
 - Nodejs;
 - NPM.
 
@@ -90,7 +91,12 @@ docker exec -i app phploc --version
 
 Acessando o composer.
 ```bash
-docker exec -i app composer --version 
+docker exec -i app comopser --version 
+```
+
+Acessando o composer.
+```bash
+docker exec -i app composer-unused --version 
 ```
 
 Acessando o nodejs.
