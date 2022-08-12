@@ -38,7 +38,7 @@ RUN pecl install -o -f xdebug && \
     docker-php-ext-enable xdebug && \
     rm -rf /tmp/pear
 
-COPY xdebug.ini $PHP_INIT_DIR/conf.d/
+COPY ./xdebug.ini $PHP_INIT_DIR/conf.d/
 
 EXPOSE 9000
 
