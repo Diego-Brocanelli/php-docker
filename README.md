@@ -7,10 +7,14 @@
 
 ## Clonando o projeto
 
-Clone o projeto, versione apenas o diretório `app`.
-
 ```bash
 git clone https://github.com/Diego-Brocanelli/php-docker.git NOME_DO_SEU_PROJETO
+```
+
+## Criando arquivo de configuração
+
+```bash
+cp .env-example .env
 ```
 
 ## Instalação
@@ -57,54 +61,4 @@ Dentro do container terá acesso as tecnologias listadas abaixo.
 - Nodejs;
 - NPM.
 
-## Executando comandos fora do container
-
-Acessando o PHP.
-```bash
-docker exec -i app php --version
-```
-
-Acessando o phpstan.
-```bash
-docker exec -i app phpstan --version 
-```
-
-Acessando o phpcs.
-```bash
-docker exec -i app phpcs --version
-```
-
-Acessando o phpunit.
-```bash
-docker exec -i app phpunit --version
-```
-
-Acessando o psalm.
-```bash
-docker exec -i app psalm --version
-```
-
-Acessando o phploc.
-```bash
-docker exec -i app phploc --version
-```
-
-Acessando o composer.
-```bash
-docker exec -i app comopser --version 
-```
-
-Acessando o composer.
-```bash
-docker exec -i app composer-unused --version 
-```
-
-Acessando o nodejs.
-```bash
-docker exec -i app node --version
-```
-
-Acessando o npm.
-```bash
-docker exec -i app npm --version
-```
+## [Comandos disponíveis](/docs/development/commands.md)

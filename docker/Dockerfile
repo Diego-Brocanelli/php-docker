@@ -30,7 +30,8 @@ RUN composer global require \
         phploc/phploc \
         phpstan/phpstan \
         icanhazstring/composer-unused \
-        vimeo/psalm
+        vimeo/psalm \
+        vlucas/phpdotenv
 
 RUN ln -s -f /root/.composer/vendor/bin/* /usr/local/bin/
 

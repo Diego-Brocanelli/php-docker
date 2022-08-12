@@ -3,8 +3,5 @@
         "psr-4": {
             "Vendor\\Namespace\\": ""
         }
-    },
-    "require": {
-        "vlucas/phpdotenv": "^5.4"
     }
 }
