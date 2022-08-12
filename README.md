@@ -33,12 +33,12 @@ docker-compose up -d
 
 ## Estrutura base para o projeto
 
-    - docs.
-        - Inclua toda a documentação do projeto aqui.
-    - src.
-        - Diretório responsável por conter todos os códigos do seu projeto.
-    - tests.
-        - Diretório responsável por conter todos os testes da sua aplicação.
+    - docs
+        - Responsável por conter todas as documentações do projeto.
+    - src
+        - Responsável por conter todos os códigos do seu projeto.
+    - tests
+        - Responsável por conter todos os testes do projeto.
     .env
         - Configurações do projeto.
 
