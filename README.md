@@ -1,5 +1,14 @@
 # Skeleton PHP application with Docker
 
+O propósito do repositório é facilitar a criação de projetos com PHP.
+
+Abaixo estão listadas as tecnologias disponíveis.
+
+- PHP8.1;
+- Mysql;
+- NGINX;
+- Redis.
+
 ## Obrigatório
 
 - Docker;
@@ -19,7 +28,7 @@ cp .env-example .env
 
 ## Instalação
 
-Acesse a raiz do projeto, e execute o comando abaixo.
+Acesse a raiz do projeto, execute o comando abaixo.
 
 ```bash
 docker-compose up
@@ -42,7 +51,7 @@ docker-compose up -d
     .env
         - Configurações do projeto.
 
-## Acessando o container
+## Acessando o bash
 
 ```bash
 docker exec -it app bash
@@ -50,15 +59,15 @@ docker exec -it app bash
 
 Dentro do container terá acesso as tecnologias listadas abaixo.
 
-- PHP 8.1;
-- PHPStan;
-- PHPCs;
-- Psalm;
-- PHPUnit;
-- PHPLoc
 - Composer;
-- composer-unused;
+- Composer-unused;
 - Nodejs;
-- NPM.
+- NPM;
+- PHP 8.1;
+- PHPCs;
+- PHPLoc;
+- PHPStan;
+- PHPUnit;
+- Psalm.
 
 ## [Comandos disponíveis](/docs/development/commands.md)
