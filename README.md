@@ -14,10 +14,17 @@ Abaixo estão listadas as tecnologias disponíveis.
 - Docker;
 - Docker Compose.
 
-## Clonando o projeto
+## Como usar
+
+Abra o terminal, acesse o diretório onde criará o projeto e execute o comando abaixo.
 
 ```bash
-git clone https://github.com/Diego-Brocanelli/php-docker.git NOME_DO_SEU_PROJETO
+wget -qO- "https://github.com/Diego-Brocanelli/php-docker/archive/refs/tags/v1.0.1.tar.gz" -O php-docker.tar.gz && \
+    tar -xf php-docker.tar.gz && \ 
+    mv php-docker-1.0.1 MEU_PROJETO && \
+    rm php-docker.tar.gz && \
+    cd MEU_PROJETO && ./install && \
+    rm install
 ```
 
 ## Criando arquivo de configuração
