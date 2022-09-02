@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Este aquivo foi insperirado no repositório:
+# https://github.com/ricardopedias/freep-console
+
+PHP_CONTAINER='app'
+
+docker-compose up -d 1> /dev/null 2> /dev/stdout
+
+if [ "$1" == "analyse" ]; then
+    docker run \
+        -e RUN_LOCAL=true \
+        -e VALIDATE_MARKDOWN=true \
+        -e MARKDOWN_CONFIG_FILE="docs/.lint.yml" \
+        -e FILTER_REGEX_INCLUDE="/docs/.*" \
+        -v "$(pwd)/docs/.lint.yml":"/action/lib/.automation/docs/.lint.yml" \
+        -v "$(pwd)":"/tmp/lint" github/super-linter
+fi
+
+docker exec -it $PHP_CONTAINER $@

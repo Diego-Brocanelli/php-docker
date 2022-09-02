@@ -5,77 +5,77 @@ Abaixo temos listados os exemplos dos comandos para utilizar todos os recursos q
 ## PHP
 
 ```bash
-docker exec -i app php --version
+./container php --version
 ```
 
 ## PHPStan
 
 ```bash
-docker exec -i app phpstan --version 
+./container phpstan --version 
 ```
 
 Annálise de código.
 
 ```bash
-docker exec -i app phpstan analyse src tests --level=9
+./container phpstan analyse src tests --level=9
 ```
 
 ## PHPCs
 
 ```bash
-docker exec -i app phpcs --version
+./container phpcs --version
 ```
 
 ## PHPUnit
 
 ```bash
-docker exec -i app phpunit --version
+./container phpunit --version
 ```
 
 Executando a switch de testes
 
 ```bash
-docker exec -i app phpunit tests
+./container phpunit tests
 ```
 
 ## Psalm
 
 ```bash
-docker exec -i app psalm --version
+./container psalm --version
 ```
 
 ## PHPLoc
 
 ```bash
-docker exec -i app phploc --version
+./container phploc --version
 ```
 
 Executando análise
 
 ```bash
-docker exec -i app phploc src/
+./container phploc src/
 ```
 
 ## Composer
 
 ```bash
-docker exec -i app composer --version 
+./container composer --version 
 ```
 
 ## Composer-unused
 
 ```bash
-docker exec -i app composer-unused --version 
+./container composer-unused --version 
 ```
 
 ## NodeJs
 
 ```bash
-docker exec -i app node --version
+./container node --version
 ```
 
 ## NPM
 
 ```bash
-docker exec -i app npm --version
+./container npm --version
 ```
