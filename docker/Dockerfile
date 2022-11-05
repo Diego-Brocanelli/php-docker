@@ -17,22 +17,24 @@ RUN apt-get update -y && \
         libpng-dev \
         libjpeg-dev \
         libfreetype6-dev 
-    # && phpize \
-    # && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    # && docker-php-ext-install -j$(nproc) gd
-        # zlib1g-dev \
+
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions gd pdo pdo_mysql intl openssl curl tokenizer mbstring
-# RUN docker-php-ext-install \
-#     pdo\
-#     pdo_mysql \
-#     intl \
-#     openssl \
-#     curl \
-#     tokenizer \
-#     mbstring
+    install-php-extensions gd \
+        apcu \
+        pdo \ 
+        pdo_mysql \
+        intl \
+        openssl \
+        curl \
+        tokenizer \
+        mbstring \
+        zip \
+        exif \
+        mcrypt \
+        opcache \
+        yaml 
 
 WORKDIR /var/www/html
 
