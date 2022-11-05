@@ -30,7 +30,7 @@ services:
     container_name: nginx
     restart: always
     ports:
-      - "80:80"
+      - "1080:80"
     volumes:
       - .:/var/www/html
     depends_on:

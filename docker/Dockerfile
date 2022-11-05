@@ -1,37 +1,42 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.1-fpm
 
 LABEL maintainer="Diego Brocanelli <diegod2@msn.com>"
 
-RUN apk update && \
-    apk upgrade && \
-    apk add --no-cache openssl \
-        bash \
-        vim \
-        mysql-client \
-        nodejs \
-        npm \
+RUN apt-get update -y && \
+    apt-get -y --no-install-recommends install \
+        openssl \
+        build-essential \
+        software-properties-common \
+        ca-certificates \
+        gnupg \
+        gettext-base \
+        curl \
+        wget \
         unzip \
-        autoconf \
-        g++ \
-        zlib-dev \
-        make
+        libicu-dev \
+        libpng-dev \
+        libjpeg-dev \
+        libfreetype6-dev 
+    # && phpize \
+    # && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    # && docker-php-ext-install -j$(nproc) gd
+        # zlib1g-dev \
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions gd pdo pdo_mysql intl openssl curl tokenizer mbstring
+# RUN docker-php-ext-install \
+#     pdo\
+#     pdo_mysql \
+#     intl \
+#     openssl \
+#     curl \
+#     tokenizer \
+#     mbstring
 
 WORKDIR /var/www/html
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-RUN composer global require \
-        phpunit/phpunit \
-        squizlabs/php_codesniffer \
-        friendsofphp/php-cs-fixer \
-        phpmd/phpmd \
-        phploc/phploc \
-        phpstan/phpstan \
-        icanhazstring/composer-unused \
-        vimeo/psalm \
-        vlucas/phpdotenv
 
 RUN ln -s -f /root/.composer/vendor/bin/* /usr/local/bin/
 
@@ -39,7 +44,19 @@ RUN pecl install -o -f xdebug && \
     docker-php-ext-enable xdebug && \
     rm -rf /tmp/pear
 
-COPY ./xdebug.ini $PHP_INIT_DIR/conf.d/
+# Configuração do Xdebug
+RUN echo "xdebug.remote_enable=on" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+RUN echo "xdebug.remote_handler=dbgp" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+RUN echo "xdebug.remote_port=9000" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+RUN echo "xdebug.remote_autostart=on" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+RUN echo "xdebug.remote_connect_back=0" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+RUN echo "xdebug.idekey=docker" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+
+# Instalação do Deployer
+RUN curl -LO https://deployer.org/deployer.phar
+RUN mv deployer.phar /usr/local/bin/dep
+RUN chmod +x /usr/local/bin/dep
 
 EXPOSE 9000
 
