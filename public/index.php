@@ -118,7 +118,7 @@
         .menu span {
             font-size: 8pt;
             color:#bababa;
-            margin-left: 110px;
+            margin-left: 30%;
             position: relative;
             top:5px;
         }
