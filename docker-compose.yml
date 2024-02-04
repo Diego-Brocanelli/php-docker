@@ -9,6 +9,7 @@ services:
     depends_on:
       - mysql
       - redis
+      - rabbitmq
 
   mysql:
     image: mysql:8
@@ -17,7 +18,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "./docker/mysql:/var/lib/mysql"
+      - "./storage/mysql:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_ROOT_HOST: "%"
@@ -41,3 +42,13 @@ services:
     container_name: redis
     expose:
       - 6379
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./storage/rabbitmq/data/:/var/lib/rabbitmq
+      - ./storage/rabbitmq/log/:/var/log/rabbitmq
