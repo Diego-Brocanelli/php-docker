@@ -42,7 +42,7 @@ Este projeto fornece um ambiente Docker pronto para desenvolvimento PHP 8.4, fac
 Baixe o repositório e execute o script de configuração:
 
 ```bash
-git clone https://github.com/seu-usuario/php84-docker.git [nome_projeto] \
+git clone https://github.com/Diego-Brocanelli/php84-docker.git [nome_projeto] \
 cd [nome_projeto] \
 chmod +x setup.sh \
 ./setup.sh
