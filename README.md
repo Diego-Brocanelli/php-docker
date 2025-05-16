@@ -22,16 +22,27 @@ Este projeto fornece um ambiente Docker pronto para desenvolvimento PHP 8.4, fac
 ## Requisitos
 
 - Docker
-- Docker Compose
+- Make
+
+## Sumário
+
+- [Instalação Rápida](#instalação-rápida)
+- [Opções de Configuração](#opções-de-configuração)
+- [Estrutura de Diretórios](#estrutura-de-diretórios)
+- [Como usar](#como-usar)
+- [Comandos auxiliares](#comandos-auxiliares)
+- [Customização](#customização)
+- [Como contribuir](#como-contribuir)
+- [Licença](#licença)
 
 ## Instalação Rápida
 
 Baixe o repositório e execute o script de configuração:
 
 ```bash
-git clone https://github.com/seu-usuario/php84-docker.git [nome_projeto]
-cd [nome_projeto]
-chmod +x setup.sh
+git clone https://github.com/seu-usuario/php84-docker.git [nome_projeto] \
+cd [nome_projeto] \
+chmod +x setup.sh \
 ./setup.sh
 ```
 
@@ -66,56 +77,14 @@ Para ver todas as opções disponíveis:
 ```
 .
 ├── docker/       # Diretório com arquivos Docker
-├── docs/         # Diretório com as documentações do projeto
+├── docs/         # Diretório com a documentação do projeto
 ├── public/       # Raiz pública da aplicação
 │   └── index.php # Arquivo inicial da aplicação
-├── src/          # Diretório com os códigos utilizados no projeto
+├── src/          # Diretório com o código-fonte do projeto
 ├── tests/        # Diretório para testes automatizados
 ├── .env          # Variáveis de ambiente do projeto
-├── Makefile      # Comandos utilitários para Docker/Compose
+├── Makefile      # Comandos utilitários para Docker Compose
 ├── setup.sh      # Script de configuração inicial
-```
-
-## Variáveis de Ambiente
-
-Copie o arquivo `.env.example` para `.env` e personalize conforme necessário:
-
-```bash
-cp .env.example .env
-```
-
-Principais variáveis:
-
-- `PROJECT_NAME`: Nome do projeto (afeta nomes dos contêineres)
-- `APP_ENV`: Ambiente (development/production)
-- `MYSQL_ROOT_PASSWORD`: Senha do root do MySQL
-- `NGINX_PORT`: Porta para acessar o servidor web
-
-## Uso
-
-### Acessando o Container PHP
-
-```bash
-docker exec -it [nome-projeto]-php bash
-```
-
-### Executando Comandos PHP
-
-```bash
-docker exec -it [nome-projeto]-php php artisan migrate  # Exemplo Laravel
-docker exec -it [nome-projeto]-php composer install     # Instalação de dependências
-```
-
-### Parando o Ambiente
-
-```bash
-docker-compose down
-```
-
-### Reiniciando o Ambiente
-
-```bash
-docker-compose up -d
 ```
 
 ## Como usar
@@ -128,7 +97,12 @@ docker-compose up -d
    ./setup.sh
    ```
 2. Siga as instruções do script para definir o nome do projeto e opções desejadas.
-3. Suba o ambiente:
+
+> No final da execução do script o ambiente estará funcionando.
+
+## Comandos auxiliares
+
+3. Subir o ambiente:
    ```bash
    make up
    ```
@@ -136,16 +110,10 @@ docker-compose up -d
    ```bash
    make sh
    ```
-5. Para parar o ambiente:
+5. Parar o ambiente:
    ```bash
    make down
    ```
-
-## Comandos Disponíveis
-
-- `make up` — Sobe todos os containers em segundo plano.
-- `make down` — Para e remove todos os containers.
-- `make sh` — Sobe o ambiente e acessa o bash do container PHP principal.
 
 ## Customização
 
@@ -160,10 +128,6 @@ Adicione arquivos de configuração em `docker/nginx/conf.d/`.
 ### Scripts de Inicialização MySQL
 
 Adicione scripts SQL em `docker/mysql/initdb.d/` para serem executados na criação do banco.
-
-## Contribuição
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
 
 ## Como contribuir
 
