@@ -1,7 +1,15 @@
-FROM php:8.1-fpm
+FROM php:8.4-fpm
 
 LABEL maintainer="Diego Brocanelli <diegod2@msn.com>"
 
+# Argumentos para ambiente de desenvolvimento/produção
+ARG ENVIRONMENT=development
+
+# Configurar timezone
+ENV TZ=UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Instalar dependências em uma única camada para reduzir o tamanho da imagem
 RUN apt-get update -y && \
     apt-get -y --no-install-recommends install \
         openssl \
@@ -16,14 +24,18 @@ RUN apt-get update -y && \
         libicu-dev \
         libpng-dev \
         libjpeg-dev \
-        libfreetype6-dev 
+        libfreetype6-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+# Instalar PHP extensions usando o script do mlocati
+ADD --chmod=755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions gd \
+# Instalar extensões do PHP em uma única camada
+RUN install-php-extensions \
+        gd \
         apcu \
-        pdo \ 
+        pdo \
         pdo_mysql \
         intl \
         openssl \
@@ -32,34 +44,64 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
         mbstring \
         zip \
         exif \
-        mcrypt \
         opcache \
-        yaml 
+        yaml \
+        igbinary \
+        redis && \
+    if [ "$ENVIRONMENT" = "development" ]; then \
+        install-php-extensions xdebug; \
+    fi
 
 WORKDIR /var/www/html
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Instalar Composer versão mais recente
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-RUN ln -s -f /root/.composer/vendor/bin/* /usr/local/bin/
+# Configurar PHP de acordo com o ambiente
+RUN if [ "$ENVIRONMENT" = "development" ]; then \
+        # Sobrescrever com as configurações de desenvolvimento
+        cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
+        # Configurar Xdebug apenas no ambiente de desenvolvimento
+        echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+        echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+        echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+        echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+        echo "xdebug.idekey=docker" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
+    else \
+        # Otimizações para produção
+        echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.max_accelerated_files=4000" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.revalidate_freq=60" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/opcache.ini && \
+        echo "opcache.jit_buffer_size=100M" >> /usr/local/etc/php/conf.d/opcache.ini; \
+    fi
 
-RUN pecl install -o -f xdebug && \
-    docker-php-ext-enable xdebug && \
-    rm -rf /tmp/pear
+# Instalar Deployer (apenas se for ambiente de desenvolvimento)
+RUN if [ "$ENVIRONMENT" = "development" ]; then \
+        curl -LO https://deployer.org/deployer.phar && \
+        mv deployer.phar /usr/local/bin/dep && \
+        chmod +x /usr/local/bin/dep; \
+    fi
 
-# Configuração do Xdebug
-RUN echo "xdebug.remote_enable=on" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN echo "xdebug.remote_handler=dbgp" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN echo "xdebug.remote_port=9000" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN echo "xdebug.remote_autostart=on" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN echo "xdebug.remote_connect_back=0" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN echo "xdebug.idekey=docker" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
-RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/docker-php-ext-xdebug.ini
+# Configuração de usuário não-root para melhor segurança
+RUN groupadd --gid 1000 appuser && \
+    useradd --uid 1000 --gid appuser --shell /bin/bash --create-home appuser
 
-# Instalação do Deployer
-RUN curl -LO https://deployer.org/deployer.phar
-RUN mv deployer.phar /usr/local/bin/dep
-RUN chmod +x /usr/local/bin/dep
+# Garantir que a pasta de trabalho pertence ao usuário da aplicação
+RUN chown -R appuser:appuser /var/www/html
 
+# Configurar permissões corretas para os diretórios do PHP-FPM
+RUN mkdir -p /var/www/.composer && \
+    chown -R appuser:appuser /var/www/.composer
+
+# Mudar para o usuário não-root
+USER appuser
+
+# Expor a porta do PHP-FPM
 EXPOSE 9000
 
-ENTRYPOINT ["php-fpm"]
+# Comando de inicialização
+CMD ["php-fpm"]

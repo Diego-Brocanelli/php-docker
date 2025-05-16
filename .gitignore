@@ -1,4 +1,7 @@
 /docker/mysql/*
+/docker/nginx/*
+/docker/php/*
+/docker/redis/*
 /node_modules
 /vendor
 .phpunit.result.cache

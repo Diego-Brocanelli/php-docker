@@ -1,8 +1,8 @@
-FROM nginx:1.21.6-alpine
+FROM nginx:1.24-alpine
 
 RUN apk update \
     apk add bash vim
 
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY ./nginx.conf /etc/nginx/conf.d
+COPY ./conf.d/default.conf /etc/nginx/conf.d
