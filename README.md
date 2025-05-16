@@ -65,26 +65,15 @@ Para ver todas as opções disponíveis:
 
 ```
 .
-├── compose.yml            # Configuração Docker Compose principal
-├── Makefile               # Comandos utilitários para Docker/Compose
-├── .env                   # Variáveis de ambiente do projeto
-├── .env.example           # Exemplo de variáveis de ambiente
-├── setup.sh               # Script de configuração inicial
-├── public/                # Raiz pública da aplicação
-│   └── index.php          # Arquivo inicial da aplicação
-├── tests/                 # Diretório para testes automatizados
-├── docker/                # Diretório com arquivos Docker
-│   ├── Dockerfile         # Dockerfile do PHP
-│   ├── mysql/             # Configurações e scripts do MySQL
-│   │   ├── conf.d/        # Arquivos de configuração do MySQL
-│   │   └── initdb.d/      # Scripts de inicialização do MySQL
-│   ├── nginx/             # Configurações do Nginx
-│   │   ├── conf.d/        # Arquivos de configuração do Nginx
-│   │   └── ssl/           # Certificados SSL para o Nginx
-│   ├── php/               # Configurações do PHP
-│   │   └── conf.d/        # Arquivos .ini personalizados para PHP
-│   └── redis/             # Configurações do Redis (se houver)
-└── README.md              # Documentação do projeto
+├── docker/       # Diretório com arquivos Docker
+├── docs/         # Diretório com as documentações do projeto
+├── public/       # Raiz pública da aplicação
+│   └── index.php # Arquivo inicial da aplicação
+├── src/          # Diretório com os códigos utilizados no projeto
+├── tests/        # Diretório para testes automatizados
+├── .env          # Variáveis de ambiente do projeto
+├── Makefile      # Comandos utilitários para Docker/Compose
+├── setup.sh      # Script de configuração inicial
 ```
 
 ## Variáveis de Ambiente

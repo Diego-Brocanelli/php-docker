@@ -145,16 +145,15 @@
         <div class="section-title">Estrutura do Projeto</div>
         <pre class="tree-struct">
 .
-├── compose.yml   <span class="comment"># Configuração do Docker Compose</span>
-├── Makefile      <span class="comment"># Comandos utilitários</span>
-├── .env          <span class="comment"># Variáveis de ambiente</span>
-├── setup.sh      <span class="comment"># Script de configuração inicial</span>
+├── docker/       <span class="comment"># Arquivos Docker</span>
+├── docs/         <span class="comment"># Documentação do projeto</span>
 ├── public/       <span class="comment"># Raiz pública da aplicação</span>
-│   └── index.php <span class="comment"># Landing page e ponto de entrada</span>
-├── src/          <span class="comment"># Arquivos do projeto</span>
+│   └── index.php <span class="comment"># Arquivo inicial da aplicação</span>
+├── src/          <span class="comment"># Código-fonte do projeto</span>
 ├── tests/        <span class="comment"># Testes automatizados</span>
-├── docker/       <span class="comment"># Arquivos e configs Docker</span>
-└── README.md     <span class="comment"># Documentação do projeto</span>
+├── .env          <span class="comment"># Arquivo de variáveis de ambiente</span>
+├── Makefile      <span class="comment"># Ferramenta auxiliar</span>
+├── setup.sh      <span class="comment"># Script de configuração inicial</span>
         </pre>
         <div class="section-title">Comandos úteis</div>
         <div class="commands">
