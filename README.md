@@ -1,5 +1,7 @@
 # PHP 8.4 Docker Environment
 
+![Banner do Projeto](docs/images/banner.png)
+
 ![PHP Version](https://img.shields.io/badge/PHP-8.4-blue)
 ![MySQL Version](https://img.shields.io/badge/MySQL-8.0-orange)
 ![Redis Version](https://img.shields.io/badge/Redis-7.0-red)
