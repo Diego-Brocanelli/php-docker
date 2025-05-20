@@ -305,7 +305,7 @@ echo -e "${BLUE}docker-compose down${NC}"
 echo -e "\n${GREEN}Obrigado por usar nosso setup!${NC}"
 
 # Remove o diretório .git para desvincular do repositório original
-# if [[ -d ".git" ]]; then
-#   echo -e "${YELLOW}Removendo diretório .git para desvincular do repositório original...${NC}"
-#   rm -rf .git
-# fi
+if [[ -d ".git" ]]; then
+  echo -e "${YELLOW}Removendo diretório .git para desvincular do repositório original...${NC}"
+  rm -rf .git
+fi
