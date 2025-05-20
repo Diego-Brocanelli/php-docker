@@ -16,7 +16,7 @@ services:
   # Aplicação PHP
   app:
     build:
-      context: ./docker/.
+      context: ./docker/php/.
       args:
         - ENVIRONMENT=${APP_ENV:-development}
     container_name: ${PROJECT_NAME:-app}-php
