@@ -1,4 +1,3 @@
-<?php declare(strict_types=1); ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -13,7 +12,7 @@
             padding: 0;
         }
         .container {
-            max-width: 540px;
+            width: 60%;
             margin: 60px auto;
             background: #fff;
             border-radius: 12px;
@@ -21,10 +20,15 @@
             padding: 32px 28px;
             text-align: center;
         }
+        h1 {
+            font-size: 32pt;
+            margin-bottom: 4rem;
+        }
         h1, h2 {
             color: #0070f3;
-            margin-bottom: 12px;
+            margin-bottom: 2rem;
         }
+
         .tech-list {
             display: flex;
             flex-wrap: wrap;
@@ -46,7 +50,8 @@
         .desc {
             color: #444;
             font-size: 1.08em;
-            margin-bottom: 24px;
+            margin-top: 4rem;
+            margin-bottom: 4rem;
         }
         .section-title {
             font-size: 1.15em;
@@ -62,7 +67,6 @@
             padding: 18px 18px 12px 18px;
             margin: 0 auto 18px auto;
             font-size: 1em;
-            max-width: 420px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.03);
         }
         .commands code {
@@ -100,13 +104,11 @@
             fill: currentColor;
         }
         .tree-struct {
-            background: #f8fafc;
+            background: #f0f4fa;
             border-radius: 8px;
             text-align: left;
             padding: 18px 18px 12px 18px;
-            margin: 32px auto 18px auto;
             font-size: 0.98em;
-            max-width: 540px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.03);
             font-family: "Fira Mono", "Consolas", "Menlo", monospace;
         }
@@ -115,11 +117,42 @@
             font-style: italic;
             margin-left: 8px;
         }
+        .flex-sections {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 32px 0 24px 0;
+        }
+        .section-block {
+            flex: 1 1 0;
+            width: 100%;
+        }
+        @media (max-width: 900px) {
+            .container {
+                width: 95%
+            }
+
+            .flex-sections {
+                flex-direction: column;
+                gap: 0;
+            }
+            .section-block {
+                max-width: 100%;
+            }
+        }
         @media (max-width: 600px) {
-            .container { padding: 18px 6px; }
+            .container {
+                width: 95%;
+                padding: 18px 6px;
+            }
+
             .tech-list li { padding: 10px 12px; font-size: 0.98em; }
+
             .commands { padding: 12px 4px 8px 8px; }
+
             .repo-link, .readme-link { font-size: 0.98em; padding: 10px 10px 10px 10px; }
+
             .tree-struct { padding: 12px 4px 8px 8px; }
         }
     </style>
@@ -127,23 +160,35 @@
 <body>
     <div class="container">
         <h1>Seja bem-vindo!</h1>
-        <h2>PHP 8.4 Docker Environment</h2>
+
+        <h2>PHP + Docker Environment</h2>
+
         <p class="desc">
             Um ambiente moderno e pronto para desenvolvimento PHP, com tudo que você precisa para criar aplicações robustas e escaláveis.<br>
             <strong>Ideal para equipes e projetos individuais!</strong>
         </p>
+
         <ul class="tech-list">
             <li>PHP 8.4 (FPM)</li>
+
             <li>Nginx</li>
+
             <li>MySQL 8.0</li>
+
             <li>Redis 7.0</li>
+
             <li>Docker &amp; Docker Compose</li>
+
             <li>Configuração via .env</li>
+
             <li>Scripts de inicialização</li>
+
             <li>Testes automatizados</li>
         </ul>
-        <div class="section-title">Estrutura do Projeto</div>
-        <pre class="tree-struct">
+        <div class="flex-sections">
+            <div class="section-block">
+                <div class="section-title">Estrutura do Projeto</div>
+                <pre class="tree-struct">
 .
 ├── docker/       <span class="comment"># Arquivos Docker</span>
 ├── docs/         <span class="comment"># Documentação do projeto</span>
@@ -154,34 +199,35 @@
 ├── .env          <span class="comment"># Arquivo de variáveis de ambiente</span>
 ├── Makefile      <span class="comment"># Ferramenta auxiliar</span>
 ├── setup.sh      <span class="comment"># Script de configuração inicial</span>
-        </pre>
-        <div class="section-title">Comandos úteis</div>
-        <div class="commands">
-            <strong>Clonar e iniciar:</strong><br>
-            <code>git clone https://github.com/Diego-Brocanelli/php-docker.git [nome_projeto]</code><br>
-            <code>cd [nome_projeto]</code><br>
-            <code>chmod +x setup.sh</code><br>
-            <code>./setup.sh</code>
-            <br><br>
-            <strong>Ambiente web completo:</strong><br>
-            <code>./setup.sh --web</code>
-            <br><br>
-            <strong>Apenas ambiente CLI (PHP + MySQL):</strong><br>
-            <code>./setup.sh --cli</code>
-            <br><br>
-            <strong>Adicionar Redis ao ambiente:</strong><br>
-            <code>./setup.sh --web --with-redis</code>
-            <br><br>
-            <strong>Usar um arquivo .env específico:</strong><br>
-            <code>./setup.sh --env meu-ambiente.env</code>
-            <br><br>
-            <strong>Ver todas as opções:</strong><br>
-            <code>./setup.sh --help</code>
-            <br><br>
-            <strong>Comandos Makefile:</strong><br>
-            <code>make up</code> — Sobe todos os containers<br>
-            <code>make down</code> — Para e remove todos os containers<br>
-            <code>make sh</code> — Sobe e acessa o bash do container PHP<br>
+                </pre>
+            </div>
+            <div class="section-block">
+                <div class="section-title">Comandos úteis</div>
+                <div class="commands">
+                    <strong>Clonar e iniciar:</strong><br>
+                    <code>git clone https://github.com/Diego-Brocanelli/php-docker.git [nome_projeto]</code><br>
+                    <code>cd [nome_projeto]</code><br>
+                    <code>chmod +x setup.sh</code><br>
+                    <code>./setup.sh</code>
+                    <br><br>
+                    <strong>Ambiente web completo:</strong><br>
+                    <code>./setup.sh --web</code>
+                    <br><br>
+                    <strong>Apenas ambiente CLI (PHP + MySQL):</strong><br>
+                    <code>./setup.sh --cli</code>
+                    <br><br>
+                    <strong>Adicionar Redis ao ambiente:</strong><br>
+                    <code>./setup.sh --web --with-redis</code>
+                    <br><br>
+                    <strong>Ver todas as opções:</strong><br>
+                    <code>./setup.sh --help</code>
+                    <br><br>
+                    <strong>Comandos Makefile:</strong><br>
+                    <code>make up</code> — Sobe todos os containers<br>
+                    <code>make down</code> — Para e remove todos os containers<br>
+                    <code>make sh</code> — Sobe e acessa o bash do container PHP<br>
+                </div>
+            </div>
         </div>
         <a class="repo-link" href="https://github.com/Diego-Brocanelli/php-docker" target="_blank">
             <!-- GitHub SVG -->
