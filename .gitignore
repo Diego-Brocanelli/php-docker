@@ -1,9 +1,10 @@
 /docker/mysql/*
-/docker/nginx/*
-/docker/php/*
+/docker/nginx/ssl/*
+/docker/php/config.d/*
 /docker/redis/*
 /node_modules
 /vendor
 .phpunit.result.cache
 /.idea
 /.vscode
+.env
