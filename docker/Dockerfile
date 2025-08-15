@@ -14,7 +14,6 @@ RUN apt-get update -y && \
     apt-get -y --no-install-recommends install \
         openssl \
         build-essential \
-        software-properties-common \
         ca-certificates \
         gnupg \
         gettext-base \
