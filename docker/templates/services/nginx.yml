@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: ${PROJECT_NAME:-app}_nginx
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - ../../../.:/var/www/html/
+      - ../templates/configs/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - app-network

@@ -104,18 +104,20 @@ Para ver todas as opções disponíveis:
 
 ## Comandos auxiliares
 
-3. Subir o ambiente:
-   ```bash
-   make up
-   ```
-4. Acesse o container PHP:
-   ```bash
-   make sh
-   ```
-5. Parar o ambiente:
-   ```bash
-   make down
-   ```
+```bash
+# Primeira vez
+make setup
+make start
+
+# Desenvolvimento diário
+make logs      # Ver o que acontece
+make shell     # Trabalhar no container
+make restart   # Reiniciar se necessário
+
+# Limpeza
+make clean     # Limpar containers
+make clean-all # Limpar tudo e reconfigurar
+```
 
 ## Customização
 

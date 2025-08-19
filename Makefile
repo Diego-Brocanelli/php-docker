@@ -1,28 +1,108 @@
-.PHONY: up down sh
+# Makefile para Projeto PHP Docker
+# Comandos para gerenciar o ambiente de desenvolvimento
 
-PROJECT_NAME := $(shell grep ^PROJECT_NAME= .env | cut -d= -f2)
-PROJECT_MODE := $(shell grep ^PROJECT_MODE= .env | cut -d= -f2)
-PROJECT_WITH_REDIS := $(shell grep ^PROJECT_WITH_REDIS= .env | cut -d= -f2)
+.PHONY: help setup start stop restart logs shell rebuild clean status test
 
-DOCKER_COMPOSE := $(shell command -v docker-compose >/dev/null 2>&1 && echo docker-compose || echo docker compose)
+# Variáveis
+DOCKER_DIR = docker
+COMPOSE_FILE = docker-compose.yml
 
-UP_PROFILES := --profile $(PROJECT_MODE)
-ifeq ($(PROJECT_WITH_REDIS),TRUE)
-	UP_PROFILES += --profile redis
-endif
+# Comando padrão
+help: ## Mostra esta ajuda
+	@echo "Comandos disponíveis:"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $1, $2}'
+	@echo ""
 
-up:
-	@if docker ps --format '{{.Names}}' | grep -q "^$(PROJECT_NAME)-php$$"; then \
-		echo "O container $(PROJECT_NAME)-php já está rodando."; \
-	else \
-		$(DOCKER_COMPOSE) -p $(PROJECT_NAME) --profile $(PROJECT_MODE) $(UP_PROFILES) up -d; \
+setup: ## Configura o projeto Docker (primeira vez)
+	@echo "🔧 Configurando ambiente Docker..."
+	@cd $(DOCKER_DIR) && ./setup.sh
+
+start: check-generated ## Inicia os containers
+	@echo "🚀 Iniciando containers..."
+	@docker-compose --env-file .env.docker up -d
+	@echo "✅ Containers iniciados!"
+	@make status
+
+stop: check-generated ## Para os containers
+	@echo "🛑 Parando containers..."
+	@docker-compose --env-file .env.docker down
+	@echo "✅ Containers parados!"
+
+restart: check-generated ## Reinicia os containers
+	@echo "🔄 Reiniciando containers..."
+	@docker-compose --env-file .env.docker restart
+	@echo "✅ Containers reiniciados!"
+
+logs: check-generated ## Mostra logs dos containers
+	@docker-compose --env-file .env.docker logs -f
+
+logs-php: check-generated ## Mostra logs apenas do PHP
+	@docker-compose --env-file .env.docker logs -f php
+
+logs-nginx: check-generated ## Mostra logs apenas do Nginx
+	@docker-compose --env-file .env.docker logs -f nginx
+
+shell: check-generated ## Acessa o shell do container PHP
+	@echo "🐚 Acessando container PHP..."
+	@docker-compose --env-file .env.docker exec php bash
+
+shell-root: check-generated ## Acessa o shell do container PHP como root
+	@echo "🐚 Acessando container PHP como root..."
+	@docker-compose --env-file .env.docker exec -u root php bash
+
+rebuild: check-generated ## Reconstroi e reinicia os containers
+	@echo "🔨 Reconstruindo containers..."
+	@docker-compose --env-file .env.docker up --build -d
+	@echo "✅ Containers reconstruídos!"
+
+clean: check-generated ## Remove containers, volumes e imagens
+	@echo "🧹 Limpando ambiente Docker..."
+	@docker-compose --env-file .env.docker down -v --remove-orphans
+	@echo "✅ Ambiente limpo!"
+
+clean-all: clean ## Remove tudo incluindo arquivos gerados
+	@echo "🗑️  Removendo arquivos gerados..."
+	@rm -f .env.docker docker-compose.yml docker-compose.sh
+	@echo "✅ Tudo removido! Execute 'make setup' para reconfigurar."
+
+status: check-generated ## Mostra status dos containers
+	@echo "📊 Status dos containers:"
+	@docker-compose --env-file .env.docker ps
+
+test: check-generated ## Executa testes dentro do container
+	@echo "🧪 Executando testes..."
+	@docker-compose --env-file .env.docker exec php vendor/bin/phpunit
+
+install: check-generated ## Instala dependências do Composer
+	@echo "📦 Instalando dependências..."
+	@docker-compose --env-file .env.docker exec php composer install
+
+update: check-generated ## Atualiza dependências do Composer
+	@echo "⬆️  Atualizando dependências..."
+	@docker-compose --env-file .env.docker exec php composer update
+
+mysql: check-generated ## Acessa o MySQL via CLI
+	@echo "🐬 Conectando ao MySQL..."
+	@docker-compose --env-file .env.docker exec mysql mysql -uroot -p
+
+postgres: check-generated ## Acessa o PostgreSQL via CLI
+	@echo "🐘 Conectando ao PostgreSQL..."
+	@docker-compose --env-file .env.docker exec postgres psql -U app_user -d app_db
+
+redis: check-generated ## Acessa o Redis CLI
+	@echo "🔴 Conectando ao Redis..."
+	@docker-compose --env-file .env.docker exec redis redis-cli
+
+# Comando interno para verificar se o setup foi executado
+check-generated:
+	@if [ ! -f ".env.docker" ] || [ ! -f "docker-compose.yml" ]; then \
+		echo "❌ Projeto não configurado. Execute: make setup"; \
+		exit 1; \
 	fi
 
-down:
-	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down
-
-sh:
-	@if ! docker ps --format '{{.Names}}' | grep -q "^$(PROJECT_NAME)-php$$"; then \
-		$(DOCKER_COMPOSE) -p $(PROJECT_NAME) --profile $(PROJECT_MODE) $(UP_PROFILES) up -d; \
-	fi; \
-	docker exec -it $(PROJECT_NAME)-php bash
+# Aliases para comandos comuns
+up: start ## Alias para start
+down: stop ## Alias para stop
+ps: status ## Alias para status
+exec: shell ## Alias para shell
