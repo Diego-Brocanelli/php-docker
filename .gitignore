@@ -1,3 +1,9 @@
+/docker/templates/base/docker/postgres/*
+/docker/templates/base/docker/postgres_data/*
+/docker/templates/base/docker/mysql_data/*
+/docker/templates/base/docker/mongodb_data/*
+/docker/templates/base/docker/rabbitmq_data/*
+/docker/templates/base/docker/redis_data/*
 /docker/mysql/*
 /docker/php/*
 /docker/redis/*
@@ -7,3 +13,4 @@
 /.idea
 /.vscode
 .env
+.env.docker

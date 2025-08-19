@@ -5,7 +5,7 @@
 
 # Variáveis
 DOCKER_DIR = docker
-COMPOSE_FILE = docker-compose.yml
+COMPOSE_FILE = compose.yml
 
 # Comando padrão
 help: ## Mostra esta ajuda
@@ -20,7 +20,7 @@ setup: ## Configura o projeto Docker (primeira vez)
 
 start: check-generated ## Inicia os containers
 	@echo "🚀 Iniciando containers..."
-	@docker-compose --env-file .env.docker up -d
+	@docker-compose --verbose --env-file .env.docker up -d
 	@echo "✅ Containers iniciados!"
 	@make status
 
@@ -63,7 +63,7 @@ clean: check-generated ## Remove containers, volumes e imagens
 
 clean-all: clean ## Remove tudo incluindo arquivos gerados
 	@echo "🗑️  Removendo arquivos gerados..."
-	@rm -f .env.docker docker-compose.yml docker-compose.sh
+	@rm -f .env.docker compose.yml docker-compose.sh
 	@echo "✅ Tudo removido! Execute 'make setup' para reconfigurar."
 
 status: check-generated ## Mostra status dos containers
@@ -96,7 +96,7 @@ redis: check-generated ## Acessa o Redis CLI
 
 # Comando interno para verificar se o setup foi executado
 check-generated:
-	@if [ ! -f ".env.docker" ] || [ ! -f "docker-compose.yml" ]; then \
+	@if [ ! -f ".env.docker" ] || [ ! -f "compose.yml" ]; then \
 		echo "❌ Projeto não configurado. Execute: make setup"; \
 		exit 1; \
 	fi

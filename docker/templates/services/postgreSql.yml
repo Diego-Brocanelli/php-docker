@@ -1,0 +1,20 @@
+services:
+  postgresql:
+    image: postgres:15
+    container_name: ${PROJECT_NAME:-app}-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./docker/postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/initdb.d:/docker-entrypoint-initdb.d
+      - ./docker/postgres/conf.d:/etc/postgresql/conf.d:ro
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+    networks:
+      - backend
+
+volumes:
+  postgres_data:

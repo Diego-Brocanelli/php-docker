@@ -1,18 +1,20 @@
-version: '3.8'
-
 services:
   php:
     build:
-      context: ../templates/configs/php
+      context: ../services
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME:-app}_php
     working_dir: /var/www/html
     volumes:
-      - ../../../src:/var/www/html/src
-      - ../../../public:/var/www/html/public
-      - ../../../tests:/var/www/html/tests
-      - ../templates/configs/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./src:/var/www/html/src
+      - ./public:/var/www/html/public
+      - ./tests:/var/www/html/tests
+      # - ./templates/configs/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
-      - app-network
+      - backend
     environment:
       - PHP_IDE_CONFIG=serverName=docker
+
+networks:
+  backend:
+    driver: bridge
