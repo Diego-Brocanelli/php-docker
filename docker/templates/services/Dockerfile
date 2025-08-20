@@ -46,9 +46,11 @@ RUN install-php-extensions \
         igbinary \
         redis && \
         install-php-extensions xdebug
-        # curl -LO https://deployer.org/deployer.phar && \
-        # mv deployer.phar /usr/local/bin/dep && \
-        # chmod +x /usr/local/bin/dep;
+
+# Instalar Deployer
+RUN curl -LO https://deployer.org/deployer.phar && \
+    mv deployer.phar /usr/local/bin/dep && \
+    chmod +x /usr/local/bin/dep
 
 WORKDIR /var/www/html
 
