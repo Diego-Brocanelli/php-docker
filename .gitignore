@@ -12,5 +12,5 @@
 .phpunit.result.cache
 /.idea
 /.vscode
-.env
-.env.docker
+/.env
+/.env.docker

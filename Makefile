@@ -20,45 +20,45 @@ setup: ## Configura o projeto Docker (primeira vez)
 
 start: check-generated ## Inicia os containers
 	@echo "🚀 Iniciando containers..."
-	@docker-compose --verbose --env-file .env.docker up -d
+	@docker compose --verbose --env-file .env.docker up -d
 	@echo "✅ Containers iniciados!"
 	@make status
 
 stop: check-generated ## Para os containers
 	@echo "🛑 Parando containers..."
-	@docker-compose --env-file .env.docker down
+	@docker compose --env-file .env.docker down
 	@echo "✅ Containers parados!"
 
 restart: check-generated ## Reinicia os containers
 	@echo "🔄 Reiniciando containers..."
-	@docker-compose --env-file .env.docker restart
+	@docker compose --env-file .env.docker restart
 	@echo "✅ Containers reiniciados!"
 
 logs: check-generated ## Mostra logs dos containers
-	@docker-compose --env-file .env.docker logs -f
+	@docker compose --env-file .env.docker logs -f
 
 logs-php: check-generated ## Mostra logs apenas do PHP
-	@docker-compose --env-file .env.docker logs -f php
+	@docker compose --env-file .env.docker logs -f php
 
 logs-nginx: check-generated ## Mostra logs apenas do Nginx
-	@docker-compose --env-file .env.docker logs -f nginx
+	@docker compose --env-file .env.docker logs -f nginx
 
 shell: check-generated ## Acessa o shell do container PHP
 	@echo "🐚 Acessando container PHP..."
-	@docker-compose --env-file .env.docker exec php bash
+	@docker compose --env-file .env.docker exec php bash
 
 shell-root: check-generated ## Acessa o shell do container PHP como root
 	@echo "🐚 Acessando container PHP como root..."
-	@docker-compose --env-file .env.docker exec -u root php bash
+	@docker compose --env-file .env.docker exec -u root php bash
 
 rebuild: check-generated ## Reconstroi e reinicia os containers
 	@echo "🔨 Reconstruindo containers..."
-	@docker-compose --env-file .env.docker up --build -d
+	@docker compose --env-file .env.docker up --build -d
 	@echo "✅ Containers reconstruídos!"
 
 clean: check-generated ## Remove containers, volumes e imagens
 	@echo "🧹 Limpando ambiente Docker..."
-	@docker-compose --env-file .env.docker down -v --remove-orphans
+	@docker compose --env-file .env.docker down -v --remove-orphans
 	@echo "✅ Ambiente limpo!"
 
 clean-all: clean ## Remove tudo incluindo arquivos gerados
@@ -68,31 +68,31 @@ clean-all: clean ## Remove tudo incluindo arquivos gerados
 
 status: check-generated ## Mostra status dos containers
 	@echo "📊 Status dos containers:"
-	@docker-compose --env-file .env.docker ps
+	@docker compose --env-file .env.docker ps
 
 test: check-generated ## Executa testes dentro do container
 	@echo "🧪 Executando testes..."
-	@docker-compose --env-file .env.docker exec php vendor/bin/phpunit
+	@docker compose --env-file .env.docker exec php vendor/bin/phpunit
 
 install: check-generated ## Instala dependências do Composer
 	@echo "📦 Instalando dependências..."
-	@docker-compose --env-file .env.docker exec php composer install
+	@docker compose --env-file .env.docker exec php composer install
 
 update: check-generated ## Atualiza dependências do Composer
 	@echo "⬆️  Atualizando dependências..."
-	@docker-compose --env-file .env.docker exec php composer update
+	@docker compose --env-file .env.docker exec php composer update
 
 mysql: check-generated ## Acessa o MySQL via CLI
 	@echo "🐬 Conectando ao MySQL..."
-	@docker-compose --env-file .env.docker exec mysql mysql -uroot -p
+	@docker compose --env-file .env.docker exec mysql mysql -uroot -p
 
 postgres: check-generated ## Acessa o PostgreSQL via CLI
 	@echo "🐘 Conectando ao PostgreSQL..."
-	@docker-compose --env-file .env.docker exec postgres psql -U app_user -d app_db
+	@docker compose --env-file .env.docker exec postgres psql -U app_user -d app_db
 
 redis: check-generated ## Acessa o Redis CLI
 	@echo "🔴 Conectando ao Redis..."
-	@docker-compose --env-file .env.docker exec redis redis-cli
+	@docker compose --env-file .env.docker exec redis redis-cli
 
 # Comando interno para verificar se o setup foi executado
 check-generated:

@@ -2,9 +2,6 @@ FROM php:8.4-fpm
 
 LABEL maintainer="Diego Brocanelli <diegod2@msn.com>"
 
-# Argumentos para ambiente de desenvolvimento/produção
-ARG ENVIRONMENT=development
-
 # Configurar timezone
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -23,7 +20,8 @@ RUN apt-get update -y && \
         libicu-dev \
         libpng-dev \
         libjpeg-dev \
-        libfreetype6-dev && \
+        libfreetype6-dev \
+        neovim && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -47,43 +45,33 @@ RUN install-php-extensions \
         yaml \
         igbinary \
         redis && \
-    if [ "$ENVIRONMENT" = "development" ]; then \
-        install-php-extensions xdebug; \
-    fi
+        install-php-extensions xdebug
+        # curl -LO https://deployer.org/deployer.phar && \
+        # mv deployer.phar /usr/local/bin/dep && \
+        # chmod +x /usr/local/bin/dep;
 
 WORKDIR /var/www/html
 
 # Instalar Composer versão mais recente
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Configurar PHP de acordo com o ambiente
-RUN if [ "$ENVIRONMENT" = "development" ]; then \
-        # Sobrescrever com as configurações de desenvolvimento
-        cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
-        # Configurar Xdebug apenas no ambiente de desenvolvimento
-        echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-        echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-        echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-        echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-        echo "xdebug.idekey=docker" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
-    else \
-        # Otimizações para produção
-        echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.max_accelerated_files=4000" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.revalidate_freq=60" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/opcache.ini && \
-        echo "opcache.jit_buffer_size=100M" >> /usr/local/etc/php/conf.d/opcache.ini; \
-    fi
-
-# Instalar Deployer (apenas se for ambiente de desenvolvimento)
-RUN if [ "$ENVIRONMENT" = "development" ]; then \
-        curl -LO https://deployer.org/deployer.phar && \
-        mv deployer.phar /usr/local/bin/dep && \
-        chmod +x /usr/local/bin/dep; \
-    fi
+# Sobrescrever com as configurações de desenvolvimento
+RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
+    # Configurar Xdebug apenas no ambiente de desenvolvimento
+    echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.idekey=docker" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini;
+# Otimizações para produção
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.max_accelerated_files=4000" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.revalidate_freq=60" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.jit_buffer_size=100M" >> /usr/local/etc/php/conf.d/opcache.ini;
 
 # Configuração de usuário não-root para melhor segurança
 RUN groupadd --gid 1000 appuser && \

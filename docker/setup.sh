@@ -81,6 +81,7 @@ choose_option() {
 define_projetc_name() {
     # Caminho do arquivo .env.template
     ENV_FILE=${GENERATED_DIR}"/.env.docker"
+    CONFIG_NGINX=${GENERATED_DIR}"/docker/templates/configs/nginx/default.conf"
 
     # Loop até o usuário digitar um nome válido
     while true; do
@@ -98,6 +99,9 @@ define_projetc_name() {
 
     # Substitui o valor de PROJECT_NAME no arquivo
     sed -i "s/^PROJECT_NAME=.*/PROJECT_NAME=${PROJECT_NAME}/" "$ENV_FILE"
+
+    # Define o nome do projeto nas configurações do Nginx
+    sed -i "s/PROJECT_NAME/${PROJECT_NAME}_php/g" "$CONFIG_NGINX"
 
     print_message $GREEN "✓ Variável PROJECT_NAME atualizada para ${PROJECT_NAME} em ${ENV_FILE}"
 }
@@ -276,36 +280,6 @@ generate_compose_file() {
             print_message $RED "Aviso: Arquivo $file não encontrado"
         fi
     done
-    
-    # Gera script executável docker-compose.sh na raiz do projeto
-    cat > "$GENERATED_DIR/docker-compose.sh" << EOF
-#!/bin/bash
-# Script gerado automaticamente pelo docker/setup.sh
-# Arquivos utilizados: ${COMPOSE_FILES[*]}
-
-# Função para executar docker compose com configurações corretas
-run_docker_compose() {
-    # Lista de arquivos compose relativos ao diretório atual
-    local compose_files=($(echo "${COMPOSE_FILES[*]}" | sed "s|$DOCKER_DIR/||g"))
-    local files_param=""
-    
-    # Construir parâmetros -f para cada arquivo
-    for file in "\${compose_files[@]}"; do
-        if [[ -f "docker/\$file" ]]; then
-            files_param="\$files_param -f docker/\$file"
-        fi
-    done
-    
-    # Executar comando docker compose
-    docker compose --env-file .env.docker \$files_param "\$@"
-}
-
-# Chamar função com todos os argumentos passados
-run_docker_compose "\$@"
-EOF
-
-    # Torna o script executável
-    chmod +x "$GENERATED_DIR/docker-compose.sh"
 
     # Navega para diretório de destino para gerar arquivo consolidado
     cd "$GENERATED_DIR"
@@ -326,16 +300,13 @@ EOF
     if docker compose --env-file .env.docker $files_for_config config > $GENERATED_DIR/compose.yml 2>/dev/null; then
         # o arquivo é consolidato com o caminho completo, removo para ficar relativo.
         PARENT_DIR="${PWD}" # Guarda o diretório pai
-        sed -i.bak "s|$PARENT_DIR|.|g" $GENERATED_DIR/compose.yml
+        sed -i "s|$PARENT_DIR|.|g" $GENERATED_DIR/compose.yml
 
         print_message $GREEN "********************************"  # Sucesso
         print_message $GREEN "✓ compose.yml consolidado gerado"  # Sucesso
     else
-        # Se falhou, cria arquivo com comentários explicativos
-        echo "# Configuração gerada pelo docker/setup.sh" > compose.yml
-        echo "# Erro ao consolidar arquivos - use docker-compose.sh" >> compose.yml
         print_message $YELLOW "*****************************************************************"
-        print_message $YELLOW "⚠ Arquivo consolidado não pôde ser gerado - use docker-compose.sh"
+        print_message $YELLOW "⚠ Arquivo consolidado não pôde ser gerado!"
     fi
     
     # Retorna ao diretório original

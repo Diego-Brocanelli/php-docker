@@ -5,11 +5,9 @@ services:
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME:-app}_php
     working_dir: /var/www/html
+    restart: unless-stopped
     volumes:
-      - ./src:/var/www/html/src
-      - ./public:/var/www/html/public
-      - ./tests:/var/www/html/tests
-      # - ./templates/configs/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ../../../.:/var/www/html:delegated
     networks:
       - backend
     environment:
