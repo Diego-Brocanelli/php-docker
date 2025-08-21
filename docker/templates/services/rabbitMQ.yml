@@ -1,13 +1,13 @@
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: ${PROJECT_NAME:-app}-rabbitmq
+    container_name: ${PROJECT_NAME:-app}_rabbitmq
     restart: unless-stopped
     ports:
       - "${RABBITMQ_PORT:-5672}:5672"       # porta para apps se conectarem
       - "${RABBITMQ_UI_PORT:-15672}:15672"  # porta da interface web de administração
     volumes:
-      - ./docker/rabbitmq_data:/var/lib/rabbitmq
+      - ../../storage/rabbitmq/data:/var/lib/rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-app}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-app}
@@ -15,4 +15,4 @@ services:
       - backend
 
 volumes:
-  rabbitmq_data:
+  data:

@@ -1,14 +1,14 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: ${PROJECT_NAME:-app}-mysql
+    container_name: ${PROJECT_NAME:-app}_mysql
     restart: unless-stopped
     ports:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
-      - ./docker/mysql_data:/var/lib/mysql
-      - ./docker/mysql/initdb.d:/docker-entrypoint-initdb.d
-      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ../../storage/mysql/data:/var/lib/mysql
+      - ../../storage/mysql/configs/initdb.d:/docker-entrypoint-initdb.d
+      - ../../storage/mysql/configs/conf.d:/etc/mysql/conf.d:ro
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_ROOT_HOST: "%"
@@ -20,4 +20,4 @@ services:
     command: --default-authentication-plugin=mysql_native_password
 
 volumes:
-  mysql_data:
+  data:

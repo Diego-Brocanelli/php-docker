@@ -1,13 +1,13 @@
 services:
   mongodb:
     image: mongo:7
-    container_name: ${PROJECT_NAME:-app}-mongodb
+    container_name: ${PROJECT_NAME:-app}_mongodb
     restart: unless-stopped
     ports:
       - "${MONGO_PORT:-27017}:27017"
     volumes:
-      - ./docker/mongodb_data:/data/db
-      - ./docker/mongodb/initdb.d:/docker-entrypoint-initdb.d:ro
+      - ../../storage/mongodb/data:/data/db
+      - ../../storage/mongodb/configs/initdb.d:/docker-entrypoint-initdb.d:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-app}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-app}
@@ -16,4 +16,4 @@ services:
       - backend
 
 volumes:
-  mongodb_data:
+  data:
