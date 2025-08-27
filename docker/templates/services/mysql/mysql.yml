@@ -6,9 +6,9 @@ services:
     ports:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
-      - ../../storage/mysql/data:/var/lib/mysql
-      - ../../storage/mysql/configs/initdb.d:/docker-entrypoint-initdb.d
-      - ../../storage/mysql/configs/conf.d:/etc/mysql/conf.d:ro
+      - ../services/mysql/storage/data:/var/lib/mysql
+      - ../services/mysql/config/initdb.d:/docker-entrypoint-initdb.d
+      - ../services/mysql/config/conf.d:/etc/mysql/conf.d:ro
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_ROOT_HOST: "%"

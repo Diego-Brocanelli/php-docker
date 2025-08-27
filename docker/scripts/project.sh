@@ -36,7 +36,7 @@ define_project_type() {
     echo
 
     # Sempre adiciona PHP independente da escolha
-    COMPOSE_FILES+=("$TEMPLATES_DIR/services/php84.yml")
+    COMPOSE_FILES+=("$TEMPLATES_DIR/services/php84/php84.yml")
 
     while true; do
         echo -n "Escolha uma opção (1-2): "
@@ -46,13 +46,15 @@ define_project_type() {
             1) # Se escolheu 1
                 project_type="Web (PHP + Nginx)"
 
-                COMPOSE_FILES+=("$TEMPLATES_DIR/services/nginx.yml")
+                COMPOSE_FILES+=("$TEMPLATES_DIR/services/nginx/nginx.yml")
 
                 echo "PROJECT_TYPE=web" >> "$BASE_ENV_FILE"
 
-                cp -f "$CONFIG_BASE_NGINX" "$CONFIG_DIR/nginx/default.conf"
+                rm -rf "$TEMPLATES_DIR/services/nginx/config/config.conf"
 
-                replace_variable "PROJECT_NAME" "${PROJECT_NAME}_php" "$CONFIG_DIR/nginx/default.conf" # defino o nome do projeto, para ficar igual ao service docker
+                cp -f "$CONFIG_BASE_NGINX" "$TEMPLATES_DIR/services/nginx/config/config.conf"
+
+                replace_variable "PROJECT_NAME" "${PROJECT_NAME}_php" "$TEMPLATES_DIR/services/nginx/config/config.conf"
 
                 break
                 ;;
@@ -91,7 +93,7 @@ define_database() {
 
         case $choice in
             1) # Se MySQL
-                COMPOSE_FILES+=("$TEMPLATES_DIR/services/mysql.yml")
+                COMPOSE_FILES+=("$TEMPLATES_DIR/services/mysql/mysql.yml")
 
                 echo "" >> "$BASE_ENV_FILE"
                 echo "# MySQL" >> "$BASE_ENV_FILE"
@@ -107,7 +109,7 @@ define_database() {
                 break
                 ;;
             2)   # Se PostgreSQL
-                COMPOSE_FILES+=("$TEMPLATES_DIR/services/postgreSql.yml")
+                COMPOSE_FILES+=("$TEMPLATES_DIR/services/postgresql/postgreSql.yml")
 
                 echo "" >> "$BASE_ENV_FILE"
                 echo "# PostgreSQL" >> "$BASE_ENV_FILE"
@@ -122,7 +124,7 @@ define_database() {
                 break
                 ;;
             3)      # Se MongoDB
-                COMPOSE_FILES+=("$TEMPLATES_DIR/services/mongoDb.yml")
+                COMPOSE_FILES+=("$TEMPLATES_DIR/services/mongodb/mongoDb.yml")
 
                 echo "" >> "$BASE_ENV_FILE"
                 echo "# MongoDB" >> "$BASE_ENV_FILE"
@@ -152,7 +154,7 @@ define_additional_services() {
 
     # Pergunta sobre Redis
     if ask_yes_no "Incluir Redis?"; then
-        COMPOSE_FILES+=("$TEMPLATES_DIR/services/redis.yml")
+        COMPOSE_FILES+=("$TEMPLATES_DIR/services/redis/redis.yml")
 
         echo "" >> "$BASE_ENV_FILE"
         echo "# Redis" >> "$BASE_ENV_FILE"
@@ -165,7 +167,7 @@ define_additional_services() {
 
     # Pergunta sobre RabbitMQ
     if ask_yes_no "Incluir RabbitMQ?"; then
-        COMPOSE_FILES+=("$TEMPLATES_DIR/services/rabbitMQ.yml")
+        COMPOSE_FILES+=("$TEMPLATES_DIR/services/rabbitmq/rabbitMQ.yml")
 
         echo "" >> "$BASE_ENV_FILE"
         echo "# RabbitMQ" >> "$BASE_ENV_FILE"
@@ -180,7 +182,7 @@ define_additional_services() {
 
     # Pergunta sobre MailRog
     if ask_yes_no "Incluir MailRog?"; then
-        COMPOSE_FILES+=("$TEMPLATES_DIR/services/mailHog.yml")
+        COMPOSE_FILES+=("$TEMPLATES_DIR/services/mailhog/mailHog.yml")
 
         echo "" >> "$BASE_ENV_FILE"
         echo "# MailRog" >> "$BASE_ENV_FILE"

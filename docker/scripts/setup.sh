@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source "$(pwd)/variables.sh"
-source "$(pwd)/message.sh"
-source "$(pwd)/project.sh"
+source "./variables.sh"
+source "./message.sh"
+source "./project.sh"
 
 check_docker_compose() {
     # Verifica se comando 'docker' existe no PATH
@@ -31,7 +31,7 @@ init_project() {
     check_docker_compose
 
     # Adiciona arquivo base obrigatório ao array de arquivos compose
-    COMPOSE_FILES+=("$PROJECT_DIR/templates/base/compose.base.yml")
+    COMPOSE_FILES+=("$TEMPLATES_DIR/base/compose.base.yml")
 }
 
 generate_compose_file() {
@@ -63,10 +63,10 @@ generate_compose_file() {
     done
 
     # Tenta gerar arquivo compose.yml consolidado
-    if docker compose --env-file $TEMPLATES_DIR/configs/.env.docker $files_for_config config > $(dirname "$PROJECT_DIR")/compose.yml; then
+    if docker compose --env-file $PROJECT_DIR/.env $files_for_config config > $PROJECT_DIR/compose.yml; then
         # o arquivo é consolidato com o caminho completo, removo para ficar relativo.
         PARENT_DIR="${PWD}" # Guarda o diretório pai
-        sed -i "s|$PARENT_DIR|.|g" $(dirname "$PROJECT_DIR")/compose.yml
+        sed -i "s|$PARENT_DIR|.|g" $PROJECT_DIR/compose.yml
 
         print_message $GREEN "********************************"  # Sucesso
         print_message $GREEN "✓ Arquivo compose.yml consolidado gerado"  # Sucesso
@@ -78,14 +78,14 @@ generate_compose_file() {
     print_message $GREEN "✓ Arquivos gerados"
 }
 
-finish_build() {
+generate_env_file() {
     if [[ ! -f "$BASE_ENV_FILE" ]]; then
         print_message $RED "❌ Erro: Arquivo '$BASE_ENV_FILE' não encontrado!"
 
         exit 1
     fi
 
-    cp -f $BASE_ENV_FILE $(dirname $PROJECT_DIR)/.env
+    cp -f $BASE_ENV_FILE $PROJECT_DIR/.env
     print_message $GREEN "✓ Arquivo .env copiado com sucesso"
 }
 
@@ -97,8 +97,8 @@ show_summary() {
     echo
     print_message $YELLOW "Arquivos gerados:" # Subtítulo
     # Lista os arquivos gerados com seus caminhos completos
-    print_message $GREEN "  • $GENERATED_DIR/.env.docker"
-    print_message $GREEN "  • $GENERATED_DIR/compose.yml"
+    print_message $GREEN "  • $PROJECT_DIR/.env"
+    print_message $GREEN "  • $PROJECT_DIR/compose.yml"
     echo
     print_message $YELLOW "Comandos úteis:"   # Lista de comandos úteis
     print_message $GREEN "  • make up            Build"
@@ -116,8 +116,9 @@ main() {
     define_project_type        # 4. Define o tipo de projeto e inclue no arquivo docker/templates/configs/.env.docker
     define_database            # 5. Define o bando de dados e inclue no arquivo docker/templates/configs/.env.docker
     define_additional_services # 6. Define se usará Redis e/ou RabbitMq e inclue no arquivo docker/templates/configs/.env.docker
-    generate_compose_file      # 7. Gera na raiz do projeto o arquivo compose.yml consolidado
-    finish_build               # 8. Executa a finalização do script (copy .env)
+    generate_env_file          # 7. Executa a finalização do script (copy .env)
+    generate_compose_file      # 8. Gera na raiz do projeto o arquivo compose.yml consolidado
+    replace_variable $PROJECT_DIR "." "$PROJECT_DIR/compose.yml"
     show_summary               # 9. Mostrar resumo
 }
 

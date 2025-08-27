@@ -78,13 +78,3 @@ replace_variable() {
     # Substitui a variável usando sed
     sed -i "s|$var_name|$replacement|g" "$file"
 }
-
-# Função que converte string para lowercase
-# RESULT=$(to_lower "HELLO WORLD")
-# echo "$RESULT"   # hello world
-to_lower() {
-    local input="$1"
-    # Converte para minúsculas usando Bash moderno
-    echo "${input,,}"
-}
-

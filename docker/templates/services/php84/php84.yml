@@ -1,7 +1,7 @@
 services:
   php:
     build:
-      context: ../services
+      context: ../services/php84
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME:-app}_php
     working_dir: /var/www/html
