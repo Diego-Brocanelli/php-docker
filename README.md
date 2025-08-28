@@ -100,6 +100,13 @@ A customização é **modular e simples**: cada serviço possui dois diretórios
 
 > 📌 Assim você mantém as configurações isoladas por serviço.
 
+## 💬 Suporte e Feedback
+
+Encontrou um problema? Tem dúvidas ou sugestões de melhoria?
+Abra uma **[issue](https://github.com/Diego-Brocanelli/php-docker/issues)** neste repositório para relatar.
+
+> Isso ajuda a centralizar as discussões, manter o histórico das sugestões e melhorar o projeto continuamente.
+
 ## 🤝 Contribuição
 
 1. Faça um **fork** do repositório
