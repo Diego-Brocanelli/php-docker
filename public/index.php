@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>PHP Docker V3 - Fácil e Rápido</title>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
+
+<style>
         :root {
             /* Light mode colors */
             --bg-primary: #ffffff;
@@ -691,16 +694,20 @@
                 <i class="fas fa-rocket"></i>
                 Versão 3.0 Disponível
             </div>
+
             <h1 class="fade-in-up delay-1">PHP Docker</h1>
+
             <p class="subtitle fade-in-up delay-2">
                 Desenvolvimento PHP com Docker de forma <strong>fácil e rápida</strong>. 
                 Configure seu ambiente completo em segundos e foque no que realmente importa: seu código.
             </p>
+
             <div class="cta-buttons fade-in-up delay-3">
                 <a href="#code-section" class="btn btn-primary">
                     <i class="fas fa-download"></i>
                     Começar Agora
                 </a>
+
                 <a href="https://github.com/Diego-Brocanelli/php-docker" class="btn btn-secondary">
                     <i class="fab fa-github"></i>
                     Ver no GitHub
@@ -713,8 +720,9 @@
     <section class="section" id="features">
         <div class="section-header">
             <h2 class="section-title">Desenvolvimento sem complicações</h2>
+
             <p class="section-subtitle">
-                Oferecemos soluções elegantes para as funcionalidades comuns necessárias em todos os projetos PHP modernos.
+                Soluções elegantes para projetos PHP modernos.
             </p>
         </div>
         
@@ -723,7 +731,9 @@
                 <div class="feature-icon">
                     <i class="fas fa-rocket"></i>
                 </div>
+
                 <h3>Configuração Instantânea</h3>
+
                 <p>Configure seu ambiente PHP completo em segundos. Sem complicações, sem dependências conflitantes. Simplesmente funciona.</p>
             </div>
             
@@ -731,16 +741,20 @@
                 <div class="feature-icon">
                     <i class="fab fa-docker"></i>
                 </div>
+
                 <h3>Docker Otimizado</h3>
-                <p>Containers Docker otimizados para PHP, com todas as extensões necessárias pré-configuradas e prontas para produção.</p>
+
+                <p>Containers Docker otimizados para PHP, com todas as extensões necessárias pré-configuradas.</p>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-layer-group"></i>
                 </div>
+
                 <h3>Stack Completa</h3>
-                <p>PHP, Nginx, MySQL, Redis e phpMyAdmin configurados e integrados. Tudo que você precisa em um só lugar.</p>
+
+                <p>PHP, Nginx, MySQL, MariaDB, Redis ou RabbitMQ configurados e integrados. Tudo que você precisa em um só lugar.</p>
             </div>
         </div>
     </section>
@@ -749,36 +763,50 @@
     <section class="code-section" id="code-section">
         <div class="code-container">
             <h2>Simples como deve ser</h2>
-            <p class="subtitle">Três comandos e você está pronto para desenvolver</p>
+            <p class="subtitle">Com poucos comandos e você está pronto para desenvolver</p>
             
             <div class="terminal-window">
                 <div class="terminal-header">
                     <div class="terminal-dots">
                         <div class="terminal-dot"></div>
+
                         <div class="terminal-dot"></div>
+
                         <div class="terminal-dot"></div>
                     </div>
+
                     <div class="terminal-title">Terminal</div>
                 </div>
+
                 <div class="terminal-content">
                     <div class="terminal-line">
                         <span class="terminal-prompt">$</span> 
-                        <span class="terminal-command">git clone https://github.com/Diego-Brocanelli/php-docker.git</span>
+
+                        <span class="terminal-command">git clone https://github.com/Diego-Brocanelli/php-docker.git [seu-projeto]</span>
                     </div>
+
                     <div class="terminal-line terminal-output">
-                        Cloning into 'php-docker-v3'...
+                        Cloning into '[seu-projeto]'...
                     </div>
+
                     <div class="terminal-line">
                         <span class="terminal-prompt">$</span> 
-                        <span class="terminal-command">cd php-docker-v3</span>
+
+                        <span class="terminal-command">cd [seu-projeto]</span>
                     </div>
+
                     <div class="terminal-line">
                         <span class="terminal-prompt">$</span> 
+
                         <span class="terminal-command">docker-compose up -d</span>
                     </div>
+
                     <div class="terminal-line terminal-success">✓ Container php-app started</div>
+
                     <div class="terminal-line terminal-success">✓ Container nginx started</div>
+
                     <div class="terminal-line terminal-success">✓ Container mysql started</div>
+
                     <div class="terminal-line terminal-success">✓ Your application is ready at http://localhost:8888</div>
                 </div>
             </div>
@@ -791,14 +819,19 @@
             <div class="stats-grid">
                 <div class="stat-item">
                     <span class="stat-number">< 30s</span>
+
                     <span class="stat-label">Setup</span>
                 </div>
+
                 <div class="stat-item">
                     <span class="stat-number">0</span>
+
                     <span class="stat-label">Configuração</span>
                 </div>
+
                 <div class="stat-item">
                     <span class="stat-number">∞</span>
+
                     <span class="stat-label">Possibilidades</span>
                 </div>
             </div>
@@ -811,6 +844,7 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <h3><i class="fab fa-php"></i> PHP Docker</h3>
+
                     <p>Desenvolvimento PHP com Docker de forma fácil e rápida. Oferecemos um ecossistema completo para desenvolvedores PHP que querem focar no que realmente importa.</p>
                 </div>
                 
@@ -827,7 +861,7 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2025 PHP Docker V3. Desenvolvido com ❤️ para a comunidade PHP.</p>
+                <p>&copy; <?= date('Y') ?> PHP Docker - Desenvolvido com ❤️ para a comunidade PHP.</p>
             </div>
         </div>
     </footer>
