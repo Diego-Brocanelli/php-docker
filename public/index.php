@@ -6,6 +6,64 @@
     <title>PHP Docker V3 - Fácil e Rápido</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            /* Light mode colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f8f9fa;
+            --bg-card: #ffffff;
+            --bg-code: #1f2937;
+            --bg-terminal: #111827;
+            --bg-terminal-header: #1f2937;
+            
+            --text-primary: #111827;
+            --text-secondary: #374151;
+            --text-tertiary: #6b7280;
+            --text-muted: #9ca3af;
+            
+            --border-primary: #e5e7eb;
+            --border-secondary: #d1d5db;
+            --border-hover: #bdc3c7;
+            
+            --accent-primary: #27ae60;
+            --accent-secondary: #2ecc71;
+            --accent-dark: #2c3e50;
+            --accent-gray: #34495e;
+            --accent-light: #ecf0f1;
+            
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] {
+            /* Dark mode colors */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-card: #1e293b;
+            --bg-code: #0f172a;
+            --bg-terminal: #020617;
+            --bg-terminal-header: #0f172a;
+            
+            --text-primary: #f1f5f9;
+            --text-secondary: #e2e8f0;
+            --text-tertiary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            --border-primary: #334155;
+            --border-secondary: #475569;
+            --border-hover: #64748b;
+            
+            --accent-primary: #10b981;
+            --accent-secondary: #34d399;
+            --accent-dark: #1e40af;
+            --accent-gray: #3b82f6;
+            --accent-light: #1e293b;
+            
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,8 +74,46 @@
             font-family: 'Nunito', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
-            background: #ffffff;
-            color: #374151;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode toggle button */
+        .theme-toggle {
+            position: relative;
+            background: var(--accent-light);
+            border: 2px solid var(--border-primary);
+            border-radius: 50px;
+            width: 50px;
+            height: 26px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--border-hover);
+        }
+
+        .theme-toggle-slider {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        [data-theme="dark"] .theme-toggle-slider {
+            transform: translateX(24px);
         }
 
         /* Laravel-style Header */
@@ -28,8 +124,12 @@
             z-index: 1000;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-primary);
             transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] header {
+            background: rgba(15, 23, 42, 0.95);
         }
 
         nav {
@@ -41,19 +141,26 @@
             align-items: center;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
         .logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             font-size: 1.5rem;
             font-weight: 700;
-            color: #ef4444;
+            color: var(--accent-dark);
             text-decoration: none;
+            transition: color 0.3s ease;
         }
 
         .logo i {
             font-size: 2rem;
-            color: #ef4444;
+            color: var(--accent-gray);
         }
 
         .nav-links {
@@ -64,20 +171,23 @@
         }
 
         .nav-links a {
-            color: #6b7280;
+            color: var(--text-tertiary);
             text-decoration: none;
             font-weight: 600;
             font-size: 0.95rem;
             transition: color 0.3s ease;
             letter-spacing: 0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .nav-links a:hover {
-            color: #ef4444;
+            color: var(--accent-dark);
         }
 
         .nav-cta {
-            background: #ef4444;
+            background: var(--accent-dark);
             color: white;
             padding: 0.625rem 1.25rem;
             border-radius: 0.5rem;
@@ -88,15 +198,15 @@
         }
 
         .nav-cta:hover {
-            background: #dc2626;
+            background: var(--accent-gray);
             transform: translateY(-1px);
         }
 
         /* Laravel-style Hero */
         .hero {
-            padding: 8rem 2rem 2rem;
+            padding: 8rem 2rem 4rem;
             text-align: center;
-            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         }
 
         .hero-container {
@@ -108,9 +218,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
+            background: var(--accent-light);
+            border: 1px solid var(--border-hover);
+            color: var(--accent-dark);
             padding: 0.5rem 1rem;
             border-radius: 50px;
             font-size: 0.875rem;
@@ -121,7 +231,7 @@
         .hero h1 {
             font-size: clamp(3rem, 8vw, 4.5rem);
             font-weight: 800;
-            color: #111827;
+            color: var(--text-primary);
             margin-bottom: 1.5rem;
             letter-spacing: -0.025em;
             line-height: 1.1;
@@ -129,7 +239,7 @@
 
         .hero .subtitle {
             font-size: 1.25rem;
-            color: #6b7280;
+            color: var(--text-tertiary);
             margin-bottom: 3rem;
             max-width: 600px;
             margin-left: auto;
@@ -158,33 +268,63 @@
         }
 
         .btn-primary {
-            background: #ef4444;
+            background: var(--accent-primary);
             color: white;
-            border: 2px solid #ef4444;
+            border: 2px solid var(--accent-primary);
         }
 
         .btn-primary:hover {
-            background: #dc2626;
-            border-color: #dc2626;
+            background: var(--accent-secondary);
+            border-color: var(--accent-secondary);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(39, 174, 96, 0.4);
         }
 
         .btn-secondary {
-            background: white;
-            color: #374151;
-            border: 2px solid #d1d5db;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 2px solid var(--border-secondary);
         }
 
         .btn-secondary:hover {
-            border-color: #9ca3af;
+            border-color: var(--border-hover);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px var(--shadow-light);
+        }
+
+        /* Trusted companies section */
+        .trusted-by {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .companies {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            opacity: 0.6;
+        }
+
+        .company-logo {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            transition: opacity 0.3s ease;
+        }
+
+        .company-logo:hover {
+            opacity: 1;
         }
 
         /* Laravel-style sections */
         .section {
-            padding: 1rem 2rem 2rem;
+            padding: 6rem 2rem;
             max-width: 1280px;
             margin: 0 auto;
         }
@@ -197,14 +337,14 @@
         .section-title {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #111827;
+            color: var(--text-primary);
             margin-bottom: 1rem;
             letter-spacing: -0.025em;
         }
 
         .section-subtitle {
             font-size: 1.125rem;
-            color: #6b7280;
+            color: var(--text-tertiary);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -213,54 +353,56 @@
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 3rem;
+            margin-top: 4rem;
         }
 
         .feature-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 1rem;
-            padding: 2rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-primary);
+            border-radius: 1.25rem;
+            padding: 2.5rem;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
 
         .feature-card:hover {
-            border-color: #fca5a5;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
+            border-color: var(--border-hover);
+            box-shadow: 0 25px 50px -12px var(--shadow-medium);
+            transform: translateY(-5px);
         }
 
         .feature-icon {
-            width: 3rem;
-            height: 3rem;
-            background: #fef2f2;
-            border-radius: 0.75rem;
+            width: 4rem;
+            height: 4rem;
+            background: var(--accent-light);
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
-            color: #ef4444;
-            font-size: 1.25rem;
+            margin: 0 auto 2rem;
+            color: var(--accent-dark);
+            font-size: 1.5rem;
         }
 
         .feature-card h3 {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #111827;
-            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
         }
 
         .feature-card p {
-            color: #6b7280;
-            line-height: 1.6;
+            color: var(--text-tertiary);
+            line-height: 1.7;
+            font-size: 1.1rem;
         }
 
         /* Code section - Laravel style */
         .code-section {
-            background: #1f2937;
+            background: var(--bg-code);
             padding: 6rem 2rem;
             margin: 4rem 0;
         }
@@ -285,19 +427,19 @@
         }
 
         .terminal-window {
-            background: #111827;
+            background: var(--bg-terminal);
             border-radius: 0.75rem;
             overflow: hidden;
             max-width: 800px;
             margin: 0 auto;
             text-align: left;
-            border: 1px solid #374151;
+            border: 1px solid var(--border-secondary);
         }
 
         .terminal-header {
-            background: #1f2937;
+            background: var(--bg-terminal-header);
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid #374151;
+            border-bottom: 1px solid var(--border-secondary);
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -314,9 +456,9 @@
             border-radius: 50%;
         }
 
-        .terminal-dot:nth-child(1) { background: #ef4444; }
-        .terminal-dot:nth-child(2) { background: #f59e0b; }
-        .terminal-dot:nth-child(3) { background: #10b981; }
+        .terminal-dot:nth-child(1) { background: var(--accent-dark); }
+        .terminal-dot:nth-child(2) { background: var(--accent-gray); }
+        .terminal-dot:nth-child(3) { background: var(--accent-primary); }
 
         .terminal-title {
             margin-left: 1rem;
@@ -355,46 +497,52 @@
 
         /* Stats section */
         .stats-section {
-            background: #f9fafb;
-            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--accent-light) 100%);
+            padding: 5rem 2rem;
+            margin: 2rem 0;
         }
 
         .stats-container {
-            max-width: 1280px;
+            max-width: 70%;
             margin: 0 auto;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
             text-align: center;
         }
 
         .stat-item {
-            padding: 2rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
         }
 
         .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #ef4444;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-primary);
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(39, 174, 96, 0.1);
         }
 
         .stat-label {
-            color: #6b7280;
-            font-weight: 600;
+            color: var(--text-primary);
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            font-size: 0.875rem;
+            font-size: 1.1rem;
         }
 
         /* Laravel-style footer */
         footer {
-            background: #111827;
-            color: #9ca3af;
+            background: var(--bg-terminal);
+            color: var(--text-muted);
             padding: 4rem 2rem 2rem;
         }
 
@@ -405,7 +553,7 @@
 
         .footer-content {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: 3rem;
             margin-bottom: 3rem;
         }
@@ -440,18 +588,18 @@
         }
 
         .footer-section a {
-            color: #9ca3af;
+            color: var(--text-muted);
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
         .footer-section a:hover {
-            color: #ef4444;
+            color: var(--accent-primary);
         }
 
         .footer-bottom {
             padding-top: 2rem;
-            border-top: 1px solid #374151;
+            border-top: 1px solid var(--border-secondary);
             text-align: center;
             font-size: 0.875rem;
         }
@@ -460,6 +608,10 @@
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
+            }
+            
+            .nav-right {
+                gap: 1rem;
             }
             
             .cta-buttons {
@@ -480,6 +632,10 @@
             .footer-content {
                 grid-template-columns: 1fr;
                 text-align: center;
+            }
+
+            .companies {
+                gap: 1.5rem;
             }
         }
 
@@ -508,14 +664,23 @@
     <!-- Header -->
     <header>
         <nav>
-            <a href="https://github.com/Diego-Brocanelli/php-docker" class="logo">
+            <a class="logo">
                 <i class="fab fa-php"></i>
                 PHP Docker
             </a>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="https://github.com/Diego-Brocanelli/php-docker">Documentação</a></li>
-            </ul>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li>
+                        <a href="https://github.com/Diego-Brocanelli/php-docker"><i class="fas fa-book"></i> Documentação</a>
+                    </li>
+                </ul>
+
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <div class="theme-toggle-slider">
+                        <i class="fas fa-sun" id="theme-icon"></i>
+                    </div>
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -532,8 +697,8 @@
                 Configure seu ambiente completo em segundos e foque no que realmente importa: seu código.
             </p>
             <div class="cta-buttons fade-in-up delay-3">
-                <a href="#features" class="btn btn-primary">
-                    <i class="fa-solid fa-code"></i>
+                <a href="#code-section" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
                     Começar Agora
                 </a>
                 <a href="https://github.com/Diego-Brocanelli/php-docker" class="btn btn-secondary">
@@ -567,7 +732,6 @@
                     <i class="fab fa-docker"></i>
                 </div>
                 <h3>Docker Otimizado</h3>
-                
                 <p>Containers Docker otimizados para PHP, com todas as extensões necessárias pré-configuradas e prontas para produção.</p>
             </div>
             
@@ -575,21 +739,19 @@
                 <div class="feature-icon">
                     <i class="fas fa-layer-group"></i>
                 </div>
-                
                 <h3>Stack Completa</h3>
-                
-                <p>PHP, Nginx, MySQL, PostgreSql, MongoDB, RabbitMQ, Redis e MailHog configurados e integrados. Tudo que você precisa em um só lugar.</p>
+                <p>PHP, Nginx, MySQL, Redis e phpMyAdmin configurados e integrados. Tudo que você precisa em um só lugar.</p>
             </div>
         </div>
     </section>
 
     <!-- Code Section -->
-    <section class="code-section">
+    <section class="code-section" id="code-section">
         <div class="code-container">
             <h2>Simples como deve ser</h2>
-            <p class="subtitle">Em poucos comandos e você está pronto para desenvolver</p>
+            <p class="subtitle">Três comandos e você está pronto para desenvolver</p>
             
-            <div class="terminal-window" id="terminal-window">
+            <div class="terminal-window">
                 <div class="terminal-header">
                     <div class="terminal-dots">
                         <div class="terminal-dot"></div>
@@ -601,34 +763,22 @@
                 <div class="terminal-content">
                     <div class="terminal-line">
                         <span class="terminal-prompt">$</span> 
-                        <span class="terminal-command">git clone https://github.com/Diego-Brocanelli/php-docker</span>
+                        <span class="terminal-command">git clone https://github.com/Diego-Brocanelli/php-docker.git</span>
                     </div>
-
                     <div class="terminal-line terminal-output">
-                        Cloning into 'php-docker'...
+                        Cloning into 'php-docker-v3'...
                     </div>
-
                     <div class="terminal-line">
                         <span class="terminal-prompt">$</span> 
-                        <span class="terminal-command">cd php-docker</span>
+                        <span class="terminal-command">cd php-docker-v3</span>
                     </div>
-
                     <div class="terminal-line">
                         <span class="terminal-prompt">$</span> 
-                        <span class="terminal-command">make setup</span>
+                        <span class="terminal-command">docker-compose up -d</span>
                     </div>
-
-                    <div class="terminal-line">
-                        <span class="terminal-prompt">$</span> 
-                        <span class="terminal-command">Digite o nome do projeto: MyProject </span>
-                    </div>
-                    
-                    <div class="terminal-line terminal-success">✓ Container app-php started</div>
-
-                    <div class="terminal-line terminal-success">✓ Container app-nginx started</div>
-
-                    <div class="terminal-line terminal-success">✓ Container app-postgresql started</div>
-
+                    <div class="terminal-line terminal-success">✓ Container php-app started</div>
+                    <div class="terminal-line terminal-success">✓ Container nginx started</div>
+                    <div class="terminal-line terminal-success">✓ Container mysql started</div>
                     <div class="terminal-line terminal-success">✓ Your application is ready at http://localhost:8888</div>
                 </div>
             </div>
@@ -641,24 +791,14 @@
             <div class="stats-grid">
                 <div class="stat-item">
                     <span class="stat-number">< 30s</span>
-
-                    <span class="stat-label">Tempo de Setup</span>
+                    <span class="stat-label">Setup</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">100%</span>
-
-                    <span class="stat-label">Compatível</span>
-                </div>
-
                 <div class="stat-item">
                     <span class="stat-number">0</span>
-
                     <span class="stat-label">Configuração</span>
                 </div>
-
                 <div class="stat-item">
                     <span class="stat-number">∞</span>
-
                     <span class="stat-label">Possibilidades</span>
                 </div>
             </div>
@@ -676,24 +816,53 @@
                 
                 <div class="footer-section">
                     <h4>Comunidade</h4>
-
                     <ul>
                         <li><a href="https://github.com/Diego-Brocanelli/php-docker">GitHub</a></li>
-                        
+
                         <li><a href="https://x.com/diego_b2">X</a></li>
-                        
-                        <li><a href="https://diegobrocanelli.com.br/about/">Autor</a></li>
+
+                        <li><a href="https://diegobrocanelli.com.br/">Blog</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; <?= date('Y') ?> PHP Docker Desenvolvido com ❤️ para a comunidade PHP.</p>
+                <p>&copy; 2025 PHP Docker V3. Desenvolvido com ❤️ para a comunidade PHP.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                html.removeAttribute('data-theme');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = 'dark'; // Default to dark mode
+            const themeIcon = document.getElementById('theme-icon');
+            
+            // Set dark mode as default
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.className = 'fas fa-moon';
+        }
+
+        // Initialize theme when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initTheme);
+
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -711,12 +880,22 @@
         // Header scroll effect
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            
             if (window.scrollY > 50) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
-                header.style.borderColor = '#d1d5db';
+                if (currentTheme === 'dark') {
+                    header.style.background = 'rgba(15, 23, 42, 0.98)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                }
+                header.style.borderColor = 'var(--border-secondary)';
             } else {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
-                header.style.borderColor = '#e5e7eb';
+                if (currentTheme === 'dark') {
+                    header.style.background = 'rgba(15, 23, 42, 0.95)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                }
+                header.style.borderColor = 'var(--border-primary)';
             }
         });
 

@@ -1,0 +1,24 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: ${PROJECT_NAME:-app}_mariadb
+    restart: unless-stopped
+    ports:
+      - "${MARIADB_PORT:-3306}:3306"
+    volumes:
+      - ../services/mariadb/storage/data:/var/lib/mariadb
+      - ../services/mariadb/config/initdb.d:/docker-entrypoint-initdb.d
+      - ../services/mariadb/config/conf.d:/etc/mariadb/conf.d:ro
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-app}
+      MARIADB_USER: ${MARIADB_USER:-app}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-app}
+    networks:
+      - backend
+
+volumes:
+  data:
+
+networks:
+  backend:

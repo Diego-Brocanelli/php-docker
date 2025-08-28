@@ -3,6 +3,7 @@
 # Storage directories - Database data files
 /docker/templates/services/mongodb/storage/*
 /docker/templates/services/mysql/storage/*
+/docker/templates/services/mariadb/storage/*
 /docker/templates/services/postgresql/storage/*
 /docker/templates/services/rabbitmq/storage/*
 /docker/templates/services/redis/storage/*

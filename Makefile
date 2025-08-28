@@ -16,7 +16,6 @@ help: ## Mostra esta ajuda
 	@echo ""
 
 setup: ## Configura o projeto Docker (primeira vez)
-	@echo "🔧 Configurando ambiente Docker..."
 	@cd $(SCRIPTS_DIR) && ./setup.sh
 
 start: check-generated ## Inicia os containers
