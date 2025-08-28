@@ -27,7 +27,7 @@ Ideal para uso individual ou em equipe.
 * ✅ Ambiente **CLI** ou **Web** (com Nginx)
 * ✅ Bancos: MySQL, MariaDB, PostgreSQL, MongoDB
 * ✅ Serviços extras: Redis, RabbitMQ, MailHog
-* ✅ Configuração simplificada via `.env` e `setup.sh`
+* ✅ Configuração simplificada via `.env`
 * ✅ Makefile com comandos prontos para o dia a dia
 
 ## ⚡ Instalação Rápida
