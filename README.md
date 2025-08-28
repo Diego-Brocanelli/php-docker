@@ -98,7 +98,7 @@ A customização é **modular e simples**: cada serviço possui dois diretórios
 * **MySQL** → adicione um `my.cnf` em `docker/templates/services/mysql/config/`
 * **Redis** → adicione configs personalizadas em `docker/templates/services/redis/config/`
 
-> 📌 Assim você mantém as configurações isoladas por serviço, sem precisar alterar os arquivos originais do projeto.
+> 📌 Assim você mantém as configurações isoladas por serviço.
 
 ## 🤝 Contribuição
 
