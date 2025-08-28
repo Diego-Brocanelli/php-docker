@@ -107,8 +107,6 @@ A customização é **modular e simples**: cada serviço possui dois diretórios
 3. Faça commit das mudanças
 4. Envie um **Pull Request** 🎉
 
----
-
 ## 📜 Licença
 
 Distribuído sob a licença MIT. Veja [LICENSE](LICENSE).
