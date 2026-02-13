@@ -1,11 +1,12 @@
 services:
   php:
     build:
-      context: ../services/php84
+      context: ../php8.3
       dockerfile: Dockerfile
-    container_name: ${PROJECT_NAME:-app}_php
+      args:
+        APP_TYPE: ${APP_TYPE:-web}
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_php
     working_dir: /var/www/html
-    restart: unless-stopped
     volumes:
       - ../../../.:/var/www/html:delegated
     networks:

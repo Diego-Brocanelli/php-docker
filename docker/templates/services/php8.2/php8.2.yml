@@ -1,0 +1,19 @@
+services:
+  php:
+    build:
+      context: ../php8.2
+      dockerfile: Dockerfile
+      args:
+        APP_TYPE: ${APP_TYPE:-web}
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_php
+    working_dir: /var/www/html
+    volumes:
+      - ../../../.:/var/www/html:delegated
+    networks:
+      - backend
+    environment:
+      - PHP_IDE_CONFIG=serverName=docker
+
+networks:
+  backend:
+    driver: bridge

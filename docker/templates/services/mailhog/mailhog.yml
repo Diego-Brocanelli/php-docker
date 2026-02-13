@@ -1,0 +1,7 @@
+services:
+  mailhog:
+    image: mailhog/mailhog
+    container_name: ${PROJECT_NAME_SNAKE_CASE:-app}_mailhog
+    ports:
+      - "${MAILHOG_SMTP_PORT:-1025}:1025" # SMTP
+      - "${MAILHOG_WEB_PORT:-8025}:8025" # Web UI

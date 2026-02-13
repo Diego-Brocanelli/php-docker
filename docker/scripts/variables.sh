@@ -1,17 +1,30 @@
-#!/bin/bash
-
-# =================== DEFINIÇÃO DE CORES ANSI ===================
-# Códigos de escape ANSI para colorir texto no terminal
-RED='\033[0;31m'      # Define código para cor vermelha
-GREEN='\033[0;32m'    # Define código para cor verde  
-YELLOW='\033[1;33m'   # Define código para cor amarela (bold)
-BLUE='\033[0;34m'     # Define código para cor azul
-NC='\033[0m'          # No Color - código para resetar cores
-
-# =================== VARIÁVEIS GLOBAIS DO SCRIPT ===================
-ROOT_DIR=$(dirname "$(dirname "$PWD")")
-PROJECT_DIR=$ROOT_DIR
-TEMPLATES_DIR="$ROOT_DIR/docker/templates"
-CONFIG_BASE_NGINX=${ROOT_DIR}"/docker/templates/services/nginx/config/default.base.conf"
-BASE_ENV_FILE=${ROOT_DIR}"/docker/templates/base/.env.docker"
-COMPOSE_FILES=()                            # Inicializa array vazio para armazenar caminhos dos arquivos compose
+ROOT_DIR=$(cd .. && pwd)
+DOCKER_DIR="$ROOT_DIR/docker"
+SCRIPT_DIR="$DOCKER_DIR/scripts"
+ENV_FILE="$ROOT_DIR/.env"
+SERVICES_ROOT_DIR="$DOCKER_DIR/templates/services"
+BASE_COMPOSE_FILE="$DOCKER_DIR/templates/base/compse.yml"
+TEMP_DIR="$DOCKER_DIR/tmp"
+SERVICES_FILES=()
+APP_TYPE=""
+PHP_VERSION=""
+PROJECT_NAME=""
+PROJECT_NAMESPACE=""
+PROJECT_NAME_LOWERCASE=""
+PROJECT_NAME_SNAKE_CASE=""
+PROJECT_PORT=""
+PROJECT_HTTPS_PORT=""
+DATABASE=""
+DB_PORT=""
+DB_ROOT_PASSWORD=""
+DB_NAME=""
+DB_USER=""
+DB_PASSWORD=""
+MAILHOG=""
+MAILHOG_SMTP_PORT=""
+MAILHOG_WEB_PORT=""
+RABBITMQ=""
+RABBITMQ_PORT=""
+RABBITMQ_WEB_PORT=""
+REDIS=""
+REDIS_PORT=""

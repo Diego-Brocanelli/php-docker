@@ -1,6 +1,9 @@
-FROM php:8.4-fpm
+FROM php:8.3-fpm
 
 LABEL maintainer="Diego Brocanelli <diegod2@msn.com>"
+
+# Argumento para controlar se instala Node.js
+ARG APP_TYPE=api
 
 # Configurar timezone
 ENV TZ=UTC
@@ -25,6 +28,17 @@ RUN apt-get update -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# IMPORTANTE: Atualizar certificados CA após a instalação
+RUN update-ca-certificates
+
+# Instalar Node.js apenas se APP_TYPE=web
+RUN if [ "$APP_TYPE" = "web" ]; then \
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+        apt-get install -y nodejs && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
 # Instalar PHP extensions usando o script do mlocati
 ADD --chmod=755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
@@ -44,18 +58,18 @@ RUN install-php-extensions \
         opcache \
         yaml \
         igbinary \
-        redis && \
+        REDIS && \
         install-php-extensions xdebug
-
-# Instalar Deployer
-RUN curl -LO https://deployer.org/deployer.phar && \
-    mv deployer.phar /usr/local/bin/dep && \
-    chmod +x /usr/local/bin/dep
 
 WORKDIR /var/www/html
 
 # Instalar Composer versão mais recente
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# Instalar Deployer baixando o PHAR oficial do GitHub
+RUN curl -LO https://github.com/deployphp/deployer/releases/latest/download/deployer.phar && \
+    mv deployer.phar /usr/local/bin/dep && \
+    chmod +x /usr/local/bin/dep
 
 # Sobrescrever com as configurações de desenvolvimento
 RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
@@ -64,16 +78,7 @@ RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
     echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.idekey=docker" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini;
-# Otimizações para produção
-RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.max_accelerated_files=4000" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.revalidate_freq=60" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.jit=1255" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.jit_buffer_size=100M" >> /usr/local/etc/php/conf.d/opcache.ini;
+    echo "xdebug.idekey=docker" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Configuração de usuário não-root para melhor segurança
 RUN groupadd --gid 1000 appuser && \

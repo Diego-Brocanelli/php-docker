@@ -6,7 +6,8 @@
 # Variáveis
 DOCKER_DIR = docker
 COMPOSE_FILE = compose.yml
-SCRIPTS_DIR = ./docker/scripts
+SCRIPT_DIR = ./docker/scripts
+SETUP_DIR = ./docker
 
 # Comando padrão
 help: ## Mostra esta ajuda
@@ -16,7 +17,7 @@ help: ## Mostra esta ajuda
 	@echo ""
 
 setup: ## Configura o projeto Docker (primeira vez)
-	@cd $(SCRIPTS_DIR) && ./setup.sh
+	@cd $(SETUP_DIR) && ./setup.sh
 
 start: check-generated ## Inicia os containers
 	@echo "🚀 Iniciando containers..."
@@ -90,9 +91,9 @@ postgres: check-generated ## Acessa o PostgreSQL via CLI
 	@echo "🐘 Conectando ao PostgreSQL..."
 	@docker compose --env-file .env exec postgres psql -U app_user -d app_db
 
-redis: check-generated ## Acessa o Redis CLI
-	@echo "🔴 Conectando ao Redis..."
-	@docker compose --env-file .env exec redis redis-cli
+REDIS: check-generated ## Acessa o REDIS CLI
+	@echo "🔴 Conectando ao REDIS..."
+	@docker compose --env-file .env exec REDIS REDIS-cli
 
 # Comando interno para verificar se o setup foi executado
 check-generated:

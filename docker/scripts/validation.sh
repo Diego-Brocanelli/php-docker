@@ -1,29 +1,32 @@
-#!/bin/bash
+check_empty() {
+    local value="$1"
+    local field_name="${2:-Campo}"
+    local default_value="${3:-}"
 
-check_docker_compose() {
-    # Verifica se comando 'docker' existe no PATH
-    if ! command -v docker &> /dev/null; then
-        print_error "Erro: Docker não está instalado ou não está no PATH"
-        exit 1
+    if [ -z "$value" ]; then
+        if [ -n "$default_value" ]; then
+            echo $default_value
+
+            return 0
+        fi
+
+        print_error "$field_name não pode ser vazio"
+
+        return 1
     fi
-    
-    # Verifica se plugin 'docker compose' funciona
-    if ! docker compose version &> /dev/null; then
-        print_error "Erro: Docker Compose plugin não está disponível"
-        print_warning "Certifique-se de que o Docker Compose plugin está instalado"
-        exit 1
-    fi
-    
-    print_success "✓ Docker Compose plugin detectado"  # Sucesso em verde
+
+    return 0
 }
 
-check_make() {
-    # Verifica se comando 'make' existe no PATH
-    if ! command -v make &> /dev/null; then
-        print_error "Erro: Make não está instalado ou não está no PATH"
-        print_warning "Instale o Make para facilitar o uso dos comandos"
-        exit 1
+file_exists() {
+    local file_path="$1"
+    local description="${2:-O arquivo}"  # Descrição do arquivo (opcional)
+
+    if [ ! -f "$file_path" ]; then
+        print_error "$description não encontrado em: $file_path"
+
+        return 1
     fi
-    
-    print_success "✓ Make detectado"  # Sucesso em verde
-}   
+
+    return 0
+}

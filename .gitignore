@@ -1,68 +1,15 @@
-# PHP Docker V3 - .gitignore
-
-# Storage directories - Database data files
-/docker/templates/services/mongodb/storage/*
-/docker/templates/services/mysql/storage/*
-/docker/templates/services/mariadb/storage/*
-/docker/templates/services/postgresql/storage/*
-/docker/templates/services/rabbitmq/storage/*
-/docker/templates/services/redis/storage/*
-
-# Nginx configuration (if auto-generated)
-/docker/templates/services/nginx/config/config.conf
-
-# Node.js
-/node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# PHP
-/vendor
+docker/templates/services/mariadb/config/*
+docker/templates/services/mariadb/storage/*
+docker/templates/services/mongodb/config/*
+docker/templates/services/mongodb/storage/*
+docker/templates/services/nginx/config/default.base.conf
+docker/templates/services/postgresql/config/*
+docker/templates/services/postgresql/storage/*
+docker/templates/services/rabbitmq/storage/*
+docker/templates/services/redis/storage/*
+node_modules/
+vendor/
 .phpunit.result.cache
-composer.lock
-
-# IDEs and Editors
-/.idea
-/.vscode
-*.swp
-*.swo
-*~
-
-# Environment files
+.idea
+.vscode
 .env
-.env.local
-.env.*.local
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Docker
-.docker/
-
-# Logs
-*.log
-/logs/*
-
-# Cache
-/cache/*
-/tmp/*
-
-# Backup files
-*.bak
-*.backup
-
-# Keep directory structure but ignore content
-/docker/templates/services/*/storage/*
-!/docker/templates/services/*/storage/.gitkeep
-
-# Additional Docker storage patterns
-**/storage/data/*
-**/storage/logs/*
-**/storage/dumps/*
