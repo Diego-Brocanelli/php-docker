@@ -1,0 +1,24 @@
+services:
+  mysql:
+    image: mysql:8.0                 # ou mysql:8.4 / mysql:latest — escolha a versão desejada
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_database
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - ../mysql8.0/storage/data:/var/lib/mysql
+      - ../mysql8.0/config/initdb.d:/docker-entrypoint-initdb.d
+      - ../mysql8.0/config/conf.d:/etc/mysql/conf.d:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE:      ${DB_NAME}
+      MYSQL_USER:          ${DB_USER}
+      MYSQL_PASSWORD:      ${DB_PASSWORD}
+    networks:
+      - backend
+
+# Caso queira manter o nome do volume como estava, pode deixar assim:
+# volumes:
+#   data:
+
+networks:
+  backend:

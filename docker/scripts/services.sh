@@ -1,7 +1,7 @@
 defien_php_version()
 {
     print_section "Which version of PHP do you want to use?"
-    PHP_VERSION=$(choiceOption '8.4' '8.3' '8.2')
+    PHP_VERSION=$(choiceOption '8.5' '8.4' '8.3' '8.2')
     print_success "PHP version: $PHP_VERSION"
 }
 
@@ -30,7 +30,7 @@ define_app_port()
 define_database()
 {
     print_section "Do you want to use a Database?"
-    DATABASE=$(choiceOption 'none' 'mariadb' 'mongodb' 'postgresql')
+    DATABASE=$(choiceOption 'none' 'mariadb' 'mongodb' 'mysql8.0' 'postgresql')
     print_success "Database: $(to_upper "$DATABASE")"
 
     if [ $DATABASE = "none" ]; then
@@ -46,6 +46,9 @@ define_database()
             ;;
         mongodb)
             default_port="27017"
+            ;;
+        mysql8.0)
+            default_port="3306"
             ;;
         postgresql)
             default_port="5432"

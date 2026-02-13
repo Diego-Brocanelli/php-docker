@@ -2,6 +2,8 @@ docker/templates/services/mariadb/config/*
 docker/templates/services/mariadb/storage/*
 docker/templates/services/mongodb/config/*
 docker/templates/services/mongodb/storage/*
+docker/templates/services/mysql8.0/config/*
+docker/templates/services/mysql8.0/storage/*
 docker/templates/services/nginx/config/default.base.conf
 docker/templates/services/postgresql/config/*
 docker/templates/services/postgresql/storage/*
@@ -10,6 +12,7 @@ docker/templates/services/redis/storage/*
 node_modules/
 vendor/
 public/
+compose.yml
 .phpunit.result.cache
 .idea
 .vscode
