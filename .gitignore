@@ -9,6 +9,7 @@ docker/templates/services/rabbitmq/storage/*
 docker/templates/services/redis/storage/*
 node_modules/
 vendor/
+public/
 .phpunit.result.cache
 .idea
 .vscode
