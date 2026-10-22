@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#72d7cb","on-error-container":"#ffdad6","tertiary":"#74db9d","inverse-primary":"#006d3c","error":"#ffb4ab","secondary-fixed-dim":"#72d7cb","surface-bright":"#323b34","on-primary":"#00391d","tertiary-container":"#53ba7f","surface-container":"#19221b","surface-container-lowest":"#07100b","outline-variant":"#3e4a40","surface-container-high":"#232c26","primary-fixed":"#88f9b0","on-tertiary":"#00391f","on-tertiary-container":"#004627","on-secondary-container":"#00302b","tertiary-fixed-dim":"#74db9d","primary-fixed-dim":"#6bdc96","on-primary-container":"#004625","surface-container-low":"#151e18","surface-tint":"#6bdc96","surface-dim":"#0c1510","surface-container-highest":"#2e3730","on-primary-fixed-variant":"#00522c","primary":"#6bdc96","on-secondary":"#003732","on-background":"#dbe5db","on-error":"#690005","surface-variant":"#2e3730","on-secondary-fixed":"#00201d","on-surface":"#dbe5db","inverse-surface":"#dbe5db","on-secondary-fixed-variant":"#005049","primary-container":"#48bb78","secondary-fixed":"#8ff4e7","secondary-container":"#34a095","on-primary-fixed":"#00210f","tertiary-fixed":"#91f8b8","surface":"#0c1510","on-surface-variant":"#bdcabd","error-container":"#93000a","inverse-on-surface":"#29332c","outline":"#879488","on-tertiary-fixed-variant":"#00522f","background":"#0c1510","on-tertiary-fixed":"#002110"},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{"space-sm":"0.5rem","margin-tablet":"1.5rem","space-xl":"2rem","margin-desktop":"2rem","space-md":"0.75rem","gutter-desktop":"1.5rem","space-xs":"0.25rem","margin":"1rem","space-lg":"1.25rem","gutter":"1rem"},fontFamily:{"headline-lg":["Geist"],"label-md":["JetBrains Mono"],"label-sm":["JetBrains Mono"],"headline-lg-mobile":["Geist"],"body-lg":["Geist"],"headline-sm":["Geist"],"code-md":["JetBrains Mono"],"body-md":["Geist"],"body-sm":["Geist"],"display":["Geist"],"code-sm":["JetBrains Mono"],"headline-md":["Geist"]},fontSize:{"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"headline-lg-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.02em",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"26px",letterSpacing:"-0.015em",fontWeight:"500"}],"code-md":["13px",{lineHeight:"20px",letterSpacing:"-0.01em",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"-0.005em",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",letterSpacing:"0",fontWeight:"400"}],"display":["40px",{lineHeight:"48px",letterSpacing:"-0.03em",fontWeight:"600"}],"code-sm":["11px",{lineHeight:"16px",letterSpacing:"0",fontWeight:"400"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-14 w-full px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">eco</span><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">MyAppV3</span><span class="bg-surface-container-high text-primary px-space-xs py-0.5 rounded font-label-sm text-label-sm uppercase tracking-wider">v3.0.0</span></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-code-md text-code-md rounded-lg shadow-[0_0_8px_rgba(107,220,150,0.15)]"><a aria-current="page" class="px-space-md py-1.5 transition-colors bg-surface-container-high text-primary font-code-md text-code-md rounded-lg shadow-[0_0_8px_rgba(107,220,150,0.15)]" data-path="dashboard" href="#">Dashboard</a><a class="px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-code-md text-code-md" data-path="services" href="#">Services</a><a class="px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-code-md text-code-md" data-path="terminal-and-cli" href="#">Terminal & CLI</a><a class="px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-code-md text-code-md" data-path="documentation" href="#">Documentation</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container-low rounded-lg font-code-sm text-code-sm text-on-surface-variant"><span class="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_6px_rgba(107,220,150,0.6)]"></span><span>PHP 8.5.12 • Nginx</span></div><div class="flex items-center gap-space-xs"><button class="p-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Restart Runtime Cluster" type="button"><span class="material-symbols-outlined text-[18px]">restart_alt</span></button><button class="p-1.5 rounded-lg bg-surface-container text-primary hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Dark Mode Active" type="button"><span class="material-symbols-outlined text-[18px]">dark_mode</span></button></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-14 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Toast Notification Component -->
+<div class="fixed bottom-6 right-6 z-50 flex items-center gap-space-sm px-space-md py-space-sm bg-surface-container-highest text-primary font-code-md text-code-md rounded-lg shadow-2xl opacity-0 translate-y-3 pointer-events-none transition-all duration-300" id="copy-toast">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span id="toast-message">Command copied to clipboard</span>
+</div>
+<!-- Hero & Workstation Telemetry Header -->
+<div class="relative w-full px-margin-desktop py-space-xl overflow-hidden">
+<!-- Atmospheric Ambient Glows -->
+<div class="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 right-10 w-80 h-80 rounded-full bg-secondary/5 blur-3xl pointer-events-none"></div>
+<div class="relative flex flex-col gap-space-xl max-w-7xl mx-auto">
+<!-- Title & Cluster Controls -->
+<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-space-lg">
+<div class="flex flex-col gap-space-sm max-w-3xl">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm tracking-wider uppercase shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(107,220,150,0.8)]"></span>
+              LOCAL CLUSTER DAEMON v3.0.0-rc4
+            </span>
+<span class="px-space-sm py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-code-sm">
+              SHA: <span class="text-tertiary">9f4b1e2</span>
+</span>
+</div>
+<h1 class="font-display text-display text-on-surface tracking-tight flex items-center gap-space-sm flex-wrap">
+            Welcome to <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-tertiary to-secondary">MyAppV3</span>!
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant flex flex-wrap items-center gap-x-2 gap-y-1">
+<span>Your web runtime is active on</span>
+<span class="inline-flex items-center px-space-xs py-0.5 rounded bg-surface-container text-primary font-code-md text-code-md">PHP 8.5.12</span>
+<span>with</span>
+<span class="inline-flex items-center px-space-xs py-0.5 rounded bg-surface-container text-secondary font-code-md text-code-md">Nginx</span>
+<span>under timezone</span>
+<span class="inline-flex items-center px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface font-code-sm text-code-sm">America/Sao_Paulo</span>
+</p>
+</div>
+<!-- Quick Top Actions -->
+<div class="flex items-center flex-wrap gap-space-sm self-start shrink-0">
+<button class="flex items-center gap-space-xs px-space-lg py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-medium tracking-wide shadow-[0_0_16px_rgba(107,220,150,0.35)] hover:bg-primary-fixed hover:shadow-[0_0_24px_rgba(107,220,150,0.5)] active:bg-primary-container transition-all" onclick="executeQuickShell()" type="button">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span>Attach Shell</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-bright hover:text-primary font-code-md text-code-md transition-all shadow-sm" onclick="copySnippet('code ~/Sites/myappv3', 'IDE Path copied')" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">folder_open</span>
+<span>Open Path</span>
+</button>
+<button class="p-2.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors" onclick="toggleDashboardTheme()" title="Toggle Surface Lighting" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</div>
+<!-- 4 High Density Metric Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop">
+<!-- Card 1: Daemons -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-all"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-medium">DAEMONS</span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(107,220,150,0.8)]"></span>
+</div>
+<div class="mt-space-md flex flex-col">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">8</span>
+<span class="font-body-md text-body-md text-primary font-medium">Healthy</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-code-sm text-code-sm mt-0.5">
+<span>0 degraded</span>
+<span class="text-tertiary">All running</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Host Memory -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-secondary/5 rounded-full blur-xl group-hover:bg-secondary/10 transition-all"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-medium">HOST MEMORY</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">memory</span>
+</div>
+<div class="mt-space-md flex flex-col">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">412</span>
+<span class="font-body-md text-body-md text-on-surface-variant">MB</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-code-sm text-code-sm mt-0.5">
+<span>8% allocated</span>
+<div class="w-16 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[8%] h-full bg-secondary rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Docker Bridge -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-medium">DOCKER BRIDGE</span>
+<span class="material-symbols-outlined text-[18px] text-tertiary">lan</span>
+</div>
+<div class="mt-space-md flex flex-col">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">app-network</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-code-sm text-code-sm mt-0.5">
+<span class="text-on-surface-variant">172.28.0.0/16</span>
+<span class="text-primary font-mono">MTU 1500</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Daemon Uptime -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-medium">DAEMON UPTIME</span>
+<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+</div>
+<div class="mt-space-md flex flex-col">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">04h 28m</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-code-sm text-code-sm mt-0.5">
+<span>Since cold start</span>
+<span class="text-primary">100% SLA</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Section: Configuration Guide (Next Steps) -->
+<div class="w-full px-margin-desktop py-space-md">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold tracking-wider uppercase">CONFIGURATION GUIDE</span>
+<span class="text-on-surface-variant font-headline-sm text-headline-sm">Next Steps</span>
+</div>
+<button class="flex items-center gap-1 text-on-surface-variant hover:text-primary font-code-sm text-code-sm transition-colors" id="guide-toggle-btn" onclick="toggleGuideSection()" type="button">
+<span id="guide-toggle-text">Collapse</span>
+<span class="material-symbols-outlined text-[16px] transition-transform" id="guide-toggle-icon">expand_less</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop transition-all duration-300" id="guide-container">
+<!-- Step 1 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-primary font-code-md text-code-md font-medium">
+<span>01. Entry Script</span>
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Replace this default splash page by editing your project's main application bootstrap.
+            </p>
+</div>
+<button class="flex items-center justify-between px-space-sm py-1.5 rounded-lg bg-surface-container-highest text-primary font-code-sm text-code-sm hover:bg-surface-bright transition-colors group" onclick="copySnippet('public/index.php', 'Path copied')" type="button">
+<span class="truncate">public/index.php</span>
+<span class="material-symbols-outlined text-[14px] text-outline group-hover:text-primary transition-colors shrink-0">content_copy</span>
+</button>
+</div>
+<!-- Step 2 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-secondary font-code-md text-code-md font-medium">
+<span>02. Document Root</span>
+<span class="material-symbols-outlined text-[16px]">security</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Only the <code class="text-primary font-code-sm text-code-sm">public/</code> directory is exposed to Nginx. Keep core source logic and secrets safely outside.
+            </p>
+</div>
+<div class="px-space-sm py-1.5 rounded-lg bg-surface-container text-outline font-code-sm text-code-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary">verified_user</span>
+<span>Isolated Chroot Active</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-tertiary font-code-md text-code-md font-medium">
+<span>03. Internal Wiring</span>
+<span class="material-symbols-outlined text-[16px]">hub</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Connect local container services seamlessly via PHP runtime environment vars:
+            </p>
+</div>
+<div class="flex flex-col gap-1">
+<button class="flex items-center justify-between px-space-xs py-1 rounded bg-surface-container-highest text-on-surface font-code-sm text-code-sm hover:text-primary transition-colors" onclick="copySnippet('getenv(\'DB_HOST\')', 'Variable copied')" type="button">
+<span class="truncate">getenv('DB_HOST')</span>
+<span class="material-symbols-outlined text-[12px] text-outline shrink-0">copy_all</span>
+</button>
+<button class="flex items-center justify-between px-space-xs py-1 rounded bg-surface-container-highest text-on-surface font-code-sm text-code-sm hover:text-primary transition-colors" onclick="copySnippet('getenv(\'REDIS_HOST\')', 'Variable copied')" type="button">
+<span class="truncate">getenv('REDIS_HOST')</span>
+<span class="material-symbols-outlined text-[12px] text-outline shrink-0">copy_all</span>
+</button>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-primary-fixed font-code-md text-code-md font-medium">
+<span>04. Environment Sync</span>
+<span class="material-symbols-outlined text-[16px]">sync_alt</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Credentials live inside <code class="text-on-surface font-code-sm text-code-sm">.env</code>. After making adjustments, execute reload command:
+            </p>
+</div>
+<button class="flex items-center justify-between px-space-sm py-1.5 rounded-lg bg-surface-container-high text-primary font-code-sm text-code-sm hover:bg-surface-bright transition-colors group" onclick="copySnippet('make restart', 'make restart copied')" type="button">
+<span class="font-semibold">make restart</span>
+<span class="material-symbols-outlined text-[14px] text-outline group-hover:text-primary transition-colors shrink-0">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Section: Services & Routing -->
+<div class="w-full px-margin-desktop py-space-lg">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-md">
+<!-- Table Header Bar -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-space-sm bg-surface-container-low p-space-md rounded-t-xl shadow-sm">
+<div class="flex items-center gap-space-md flex-wrap">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-2">
+<span>Services & Routing</span>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-normal">8 Running</span>
+</h2>
+<span class="text-on-surface-variant font-code-sm text-code-sm hidden sm:inline">• bridge routing active</span>
+</div>
+<!-- Filter Input -->
+<div class="relative w-full md:w-72">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-outline">search</span>
+<input class="w-full pl-9 pr-space-md py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-code-sm text-code-sm placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-inner" id="service-filter-input" onkeyup="filterServicesTable()" placeholder="Filter daemons (e.g. redis, 3306)..." type="text"/>
+</div>
+</div>
+<!-- Interactive Data Table -->
+<div class="w-full overflow-x-auto rounded-b-xl bg-surface-container-lowest shadow-md">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container font-label-sm text-label-sm text-outline tracking-wider uppercase select-none">
+<th class="py-space-sm px-space-md">STATUS</th>
+<th class="py-space-sm px-space-md">SERVICE</th>
+<th class="py-space-sm px-space-md">INSIDE DOCKER</th>
+<th class="py-space-sm px-space-md">FROM YOUR MACHINE</th>
+<th class="py-space-sm px-space-md text-right">DETAILS & ACTION</th>
+</tr>
+</thead>
+<tbody class="font-code-sm text-code-sm" id="services-table-body">
+<!-- PHP-FPM -->
+<tr class="service-row bg-surface-container-lowest hover:bg-surface-container/60 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">PHP-FPM 8.5.12 engine</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">Zend OPcache v8.5.12 • JIT Active</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">php:9000</td>
+<td class="py-space-md px-space-md text-outline">—</td>
+<td class="py-space-md px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all font-label-sm text-label-sm" onclick="copySnippet('make shell', 'make shell copied')" type="button">
+<span>make shell</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</td>
+</tr>
+<!-- Nginx -->
+<tr class="service-row bg-surface-container-low hover:bg-surface-container/80 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">Nginx Reverse Proxy</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">HTTP/2 FastCGI Ingress Daemon</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">nginx:80</td>
+<td class="py-space-md px-space-md">
+<a class="inline-flex items-center gap-1 text-secondary hover:text-primary transition-colors underline decoration-secondary/40 underline-offset-4" href="http://localhost:8888" rel="noopener noreferrer" target="_blank">
+<span>http://localhost:8888</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="py-space-md px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" onclick="copySnippet('make logs-nginx', 'Command copied')" type="button">
+<span>make logs-nginx</span>
+</button>
+</td>
+</tr>
+<!-- MariaDB -->
+<tr class="service-row bg-surface-container-lowest hover:bg-surface-container/60 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">MariaDB 10.11 LTS</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">database: app, user: app (env DB_*)</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">mariadb:3306</td>
+<td class="py-space-md px-space-md font-mono text-on-surface">127.0.0.1:3306</td>
+<td class="py-space-md px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" onclick="copySnippet('mysql -h 127.0.0.1 -P 3306 -u app -p', 'MySQL connection string copied')" type="button">
+<span>Connect CLI</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</td>
+</tr>
+<!-- Redis -->
+<tr class="service-row bg-surface-container-low hover:bg-surface-container/80 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">Redis Cache & Key-Value</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">InMemory persistence (env REDIS_*)</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">redis:6379</td>
+<td class="py-space-md px-space-md font-mono text-on-surface">127.0.0.1:6379</td>
+<td class="py-space-md px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary transition-all font-label-sm text-label-sm" onclick="copySnippet('make redis', 'make redis copied')" type="button">
+<span>make redis</span>
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+</button>
+</td>
+</tr>
+<!-- Mailpit -->
+<tr class="service-row bg-surface-container-lowest hover:bg-surface-container/60 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">Mailpit Mock SMTP Server</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">Web UI to inspect sent e-mails (env MAIL_*)</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">mailpit:1025 (SMTP)</td>
+<td class="py-space-md px-space-md">
+<a class="inline-flex items-center gap-1 text-secondary hover:text-primary transition-colors underline decoration-secondary/40 underline-offset-4" href="http://localhost:8025" rel="noopener noreferrer" target="_blank">
+<span>http://localhost:8025</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="py-space-md px-space-md text-right">
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-code-sm">UI Live</span>
+</td>
+</tr>
+<!-- Memcached -->
+<tr class="service-row bg-surface-container-low hover:bg-surface-container/80 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">Memcached Object Memory Store</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">env MEMCACHED_*</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">memcached:11211</td>
+<td class="py-space-md px-space-md font-mono text-on-surface">127.0.0.1:11211</td>
+<td class="py-space-md px-space-md text-right">
+<span class="text-outline font-code-sm text-code-sm">TCP Pool</span>
+</td>
+</tr>
+<!-- Mercure -->
+<tr class="service-row bg-surface-container-lowest hover:bg-surface-container/60 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">Mercure Server-Sent Events Hub</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">JWT secret/issuer in env MERCURE_JWT_*</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary truncate max-w-[150px]">mercure/.well-known/mercure</td>
+<td class="py-space-md px-space-md">
+<a class="inline-flex items-center gap-1 text-secondary hover:text-primary transition-colors underline decoration-secondary/40 underline-offset-4" href="http://localhost:3000/.well-known/mercure" rel="noopener noreferrer" target="_blank">
+<span>http://localhost:3000/...</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="py-space-md px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" onclick="copySnippet('curl http://localhost:3000/.well-known/mercure', 'Mercure endpoint copied')" type="button">
+<span>Test Hub</span>
+<span class="material-symbols-outlined text-[14px]">sensors</span>
+</button>
+</td>
+</tr>
+<!-- Kafka -->
+<tr class="service-row bg-surface-container-low hover:bg-surface-container/80 transition-colors">
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(107,220,150,0.8)]"></span>
+                  OK
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md text-on-surface font-medium">Kafka Event Streaming Broker</div>
+<div class="text-on-surface-variant font-code-sm text-code-sm">env KAFKA_BROKERS (KRaft mode)</div>
+</td>
+<td class="py-space-md px-space-md font-mono text-tertiary">kafka:9092</td>
+<td class="py-space-md px-space-md text-outline">—</td>
+<td class="py-space-md px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors font-label-sm text-label-sm" onclick="copySnippet('make logs-worker', 'Logs command copied')" type="button">
+<span>make logs-worker</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Bottom Grid: Useful Commands & Suggested Packages -->
+<div class="w-full px-margin-desktop py-space-xl">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop">
+<!-- Left Column: Useful Commands (7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Useful Commands</h3>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Makefile Workstation Helpers</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-md flex flex-col gap-space-sm">
+<!-- Command 1 & 2 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-primary font-medium">make start</span>
+<button class="text-outline group-hover:text-primary transition-colors" onclick="copySnippet('make start', 'Copied: make start')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-primary font-medium">make stop</span>
+<button class="text-outline group-hover:text-primary transition-colors" onclick="copySnippet('make stop', 'Copied: make stop')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Command 3 & 4 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-primary font-medium">make shell</span>
+<button class="text-outline group-hover:text-primary transition-colors" onclick="copySnippet('make shell', 'Copied: make shell')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-primary font-medium">make logs</span>
+<button class="text-outline group-hover:text-primary transition-colors" onclick="copySnippet('make logs', 'Copied: make logs')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Command 5: Composer helper -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-tertiary truncate pr-2">make composer c="require vendor/package"</span>
+<button class="text-outline group-hover:text-tertiary transition-colors shrink-0" onclick="copySnippet('make composer c="require vendor/package"', 'Composer helper copied')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<!-- Command 6 & 7 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-primary font-medium">make test</span>
+<button class="text-outline group-hover:text-primary transition-colors" onclick="copySnippet('make test', 'Copied: make test')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-secondary font-medium">make logs-worker</span>
+<button class="text-outline group-hover:text-secondary transition-colors" onclick="copySnippet('make logs-worker', 'Copied: make logs-worker')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Command 8 & 9 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-secondary font-medium">make worker-restart</span>
+<button class="text-outline group-hover:text-secondary transition-colors" onclick="copySnippet('make worker-restart', 'Copied: make worker-restart')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-highest hover:bg-surface-bright transition-colors group">
+<span class="font-code-sm text-code-sm text-secondary font-medium">make logs-scheduler</span>
+<button class="text-outline group-hover:text-secondary transition-colors" onclick="copySnippet('make logs-scheduler', 'Copied: make logs-scheduler')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Suggested Packages & Cluster Metadata (5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">extension</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Suggested Packages</h3>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Pre-configured integrations</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Suggested Package 1 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold tracking-wider">REALTIME SSE (Symfony)</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">bolt</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Publish Mercure updates with zero config directly to connected browser clients.</p>
+<div class="mt-space-xs flex items-center justify-between p-space-xs rounded bg-surface-container-highest">
+<span class="font-code-sm text-code-sm text-tertiary truncate">make composer c="require symfony/mercure"</span>
+<button class="text-outline hover:text-primary transition-colors ml-2" onclick="copySnippet('make composer c="require symfony/mercure"', 'Composer command copied')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Suggested Package 2 -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-secondary font-label-sm text-label-sm font-semibold tracking-wider">E-MAIL DELIVERY (Mailpit Ready)</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">mail</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Send test transactional e-mails directly into the local Mailpit web inbox.</p>
+<div class="mt-space-xs flex items-center justify-between p-space-xs rounded bg-surface-container-highest">
+<span class="font-code-sm text-code-sm text-secondary truncate">make composer c="require symfony/mailer"</span>
+<button class="text-outline hover:text-secondary transition-colors ml-2" onclick="copySnippet('make composer c="require symfony/mailer"', 'Composer command copied')" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Bottom Card: Engine Metadata & Top Jump -->
+<div class="p-space-md rounded-xl bg-surface-container-high flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(107,220,150,0.8)]"></span>
+<div class="flex flex-col font-code-sm text-code-sm">
+<span class="text-on-surface font-medium">Docker Engine v27.1</span>
+<span class="text-outline">Compose v2.29 • Linux/ARM64</span>
+</div>
+</div>
+<button class="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container-highest text-on-surface hover:text-primary hover:bg-surface-bright transition-all font-label-sm text-label-sm" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" type="button">
+<span>Top</span>
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Dynamic Runtime Scripts for Micro-Interactions -->
+<script>
+    function copySnippet(text, message) {
+      if (navigator && navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      }
+      showToast(message || 'Copied to clipboard');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('copy-toast');
+      const textElem = document.getElementById('toast-message');
+      if (!toast) return;
+      textElem.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+      }, 2200);
+    }
+
+    function executeQuickShell() {
+      copySnippet('make shell', 'Attached command: "make shell" copied to clipboard');
+    }
+
+    function toggleGuideSection() {
+      const container = document.getElementById('guide-container');
+      const label = document.getElementById('guide-toggle-text');
+      const icon = document.getElementById('guide-toggle-icon');
+      if (!container) return;
+      
+      const isHidden = container.classList.toggle('hidden');
+      if (isHidden) {
+        label.textContent = 'Expand';
+        icon.textContent = 'expand_more';
+      } else {
+        label.textContent = 'Collapse';
+        icon.textContent = 'expand_less';
+      }
+    }
+
+    function filterServicesTable() {
+      const input = document.getElementById('service-filter-input');
+      const filter = input.value.toLowerCase();
+      const rows = document.querySelectorAll('#services-table-body .service-row');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+      });
+    }
+
+    function toggleDashboardTheme() {
+      showToast('Theme synchronized with workstation defaults');
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest py-space-sm"><div class="w-full px-margin-desktop flex flex-col sm:flex-row items-center justify-between gap-space-xs font-code-sm text-code-sm text-on-surface-variant"><div class="flex items-center gap-space-xs"><span class="inline-block w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(107,220,150,0.6)]"></span><span>Workstation Runtime Local Daemon Active</span></div><div class="flex items-center gap-space-md font-label-sm text-label-sm text-outline"><span>127.0.0.1:9000 • TLS v1.3</span><span>© 2025 MyAppV3 Engine Core</span></div></div></footer></body></html>

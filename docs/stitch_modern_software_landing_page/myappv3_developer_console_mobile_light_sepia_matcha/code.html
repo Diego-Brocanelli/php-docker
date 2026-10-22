@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "primary": "#2D5A3D",
+        "primary-dark": "#1D3D28",
+        "primary-light": "#3E6B48",
+        "primary-container": "#E3ECE5",
+        "on-primary": "#ffffff",
+        "on-primary-container": "#183623",
+        "matcha": "#3E6B48",
+        "matcha-light": "#E8F0EA",
+        "matcha-muted": "#567A5E",
+        "background": "#F7F3EB",
+        "surface": "#FAF7F2",
+        "surface-card": "#FFFFFF",
+        "surface-card-subtle": "#FDFCFA",
+        "surface-container": "#F2ECE1",
+        "surface-container-low": "#F9F6F0",
+        "surface-container-high": "#EBE4D5",
+        "surface-border": "#E5DEC8",
+        "surface-border-subtle": "#EEE7D8",
+        "on-surface": "#211F1C",
+        "on-surface-medium": "#3B3731",
+        "on-surface-variant": "#696356",
+        "sand-pill": "#EFEBE0",
+        "sand-pill-hover": "#E5E0D3"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "space-sm": "0.5rem",
+        "margin": "1rem",
+        "space-md": "0.875rem",
+        "gutter": "1rem",
+        "space-xl": "2rem",
+        "space-xs": "0.25rem",
+        "space-lg": "1.25rem"
+      },
+      "fontFamily": {
+        "body-md": ["Inter", "sans-serif"],
+        "headline-lg": ["Geist", "sans-serif"],
+        "headline-md": ["Geist", "sans-serif"],
+        "headline-xl": ["Geist", "sans-serif"],
+        "body-sm": ["Inter", "sans-serif"],
+        "code-inline": ["JetBrains Mono", "monospace"],
+        "code-block": ["JetBrains Mono", "monospace"],
+        "label-status": ["JetBrains Mono", "monospace"],
+        "label-table": ["Geist", "sans-serif"]
+      },
+      "fontSize": {
+        "body-md": ["0.875rem", { "lineHeight": "1.4rem", "fontWeight": "400" }],
+        "headline-lg": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+        "headline-md": ["1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+        "headline-xl": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+        "body-sm": ["0.75rem", { "lineHeight": "1.2rem", "fontWeight": "400" }],
+        "code-inline": ["0.8125rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+        "code-block": ["0.875rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+        "label-status": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.04em", "fontWeight": "600" }],
+        "label-table": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.05em", "fontWeight": "600" }]
+      }
+    }
+  }
+};</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+      background-color: #F7F3EB;
+    }
+  </style>
+</head><body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col antialiased selection:bg-matcha-light selection:text-primary"><header class="fixed top-0 w-full z-50 pt-safe bg-[#FAF7F2]/90 backdrop-blur-xl border-b border-surface-border shadow-[0_1px_3px_rgba(45,90,61,0.04)]"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="MyAppV3 Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1WhJIyGNATXokZKvqNrSeN5bmjYZUTdeO1ei3J_pAOlQc5EZ9gZK3dYU2olVuriX-lLUsVKW6mz0gGCVABuWDFaT9Km-RVNYOavjrZJk46dAhTpFB8livwfIj5oQycklgtnjk3pDVQ2wWNaZ-AkeVJdtccXip-L-jccQgQ5vrOUh1MPtkuh8p48-auIM9RICUKR5eam1LdZ-_uFLNs0n93vBzBsNUClZQVUleSFSMlIBEXQcv8gNJy3X4I"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md text-on-surface truncate tracking-tight">MyAppV3</span><span class="px-space-xs py-0.5 rounded-full bg-matcha-light text-primary font-label-status text-label-status flex items-center gap-1 shrink-0 border border-matcha/20"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>LIVE</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Overview</span></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Theme Switcher" class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors border border-surface-border" onclick="toggleTheme()"><span class="material-symbols-outlined text-[19px]">light_mode</span></button><button aria-label="Navigation Drawer" class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors border border-surface-border"><span class="material-symbols-outlined text-[19px]">terminal</span></button><div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 ml-1 shadow-sm"><span class="material-symbols-outlined text-[17px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-background px-gutter"><div class="flex flex-col w-full pb-8 space-y-3 pt-3">
+<!-- Ambient Toast Notification Container -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform scale-95 flex items-center gap-2 px-space-md py-space-xs rounded-full bg-on-surface text-[#FAF7F2] shadow-xl" id="toast">
+<span class="material-symbols-outlined text-[16px] text-matcha-light">check_circle</span>
+<span class="font-code-inline text-code-inline" id="toast-text">Copied to clipboard!</span>
+</div>
+<!-- Runtime Status Overview Card -->
+<section class="rounded-xl bg-surface-card p-space-md flex flex-col gap-space-sm border border-surface-border shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+<span class="font-headline-md text-headline-md text-on-surface">Runtime Active</span>
+</div>
+<span class="font-label-status text-label-status px-2.5 py-0.5 rounded-full bg-matcha-light text-primary border border-matcha/20 uppercase tracking-wider font-semibold">
+        8 / 8 Healthy
+      </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-medium">
+      Project stack executing seamlessly on <span class="text-on-surface font-semibold font-code-inline text-code-inline px-1 py-0.5 rounded bg-sand-pill">PHP 8.5.12</span> with <span class="text-on-surface font-semibold font-code-inline text-code-inline px-1 py-0.5 rounded bg-sand-pill">Nginx</span> edge gateway.
+    </p>
+<!-- Meta Chips -->
+<div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-low border border-surface-border text-on-surface-variant font-code-inline text-code-inline">
+<span class="material-symbols-outlined text-[14px] text-primary">schedule</span>
+<span class="text-on-surface-medium font-medium">America/Sao_Paulo</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-low border border-surface-border text-on-surface-variant font-code-inline text-code-inline">
+<span class="material-symbols-outlined text-[14px] text-matcha">memory</span>
+<span class="text-on-surface-medium font-medium">Bridge: veth_app</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container-low border border-surface-border text-on-surface-variant font-code-inline text-code-inline">
+<span class="material-symbols-outlined text-[14px] text-primary">shield</span>
+<span class="text-on-surface-medium font-medium">Isolation: OK</span>
+</div>
+</div>
+<!-- Quick Micro-Actions -->
+<div class="grid grid-cols-3 gap-2 pt-1.5">
+<button class="flex items-center justify-center gap-1.5 py-2 px-1 rounded-lg bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-primary active:scale-95 transition-all text-center" onclick="copySnippet('make shell')">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span class="font-code-inline text-code-inline font-medium truncate">make shell</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-1 rounded-lg bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-on-surface-medium active:scale-95 transition-all text-center" onclick="copySnippet('make logs')">
+<span class="material-symbols-outlined text-[16px]">view_timeline</span>
+<span class="font-code-inline text-code-inline font-medium truncate">make logs</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-1 rounded-lg bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-primary active:scale-95 transition-all text-center" onclick="copySnippet('make restart')">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span class="font-code-inline text-code-inline font-medium truncate">make restart</span>
+</button>
+</div>
+</section>
+<!-- Interactive Guidance / Next Steps (Collapsible) -->
+<section class="rounded-xl bg-surface-card overflow-hidden border border-surface-border shadow-sm">
+<button class="w-full p-space-md flex items-center justify-between text-left hover:bg-surface-container-low transition-colors" onclick="toggleSection('next-steps-body', 'next-steps-icon')">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-matcha-light text-primary border border-matcha/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+</span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Getting Started</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">4 developer instructions ready</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-200" id="next-steps-icon">expand_less</span>
+</button>
+<div class="px-space-md pb-space-md flex flex-col gap-2" id="next-steps-body">
+<div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle">
+<span class="font-code-inline text-code-inline text-primary bg-matcha-light border border-matcha/20 w-5 h-5 rounded flex items-center justify-center shrink-0 font-semibold">1</span>
+<p class="font-body-sm text-body-sm text-on-surface-medium leading-snug">
+          Replace this landing view directly by editing <code class="px-1.5 py-0.5 rounded bg-sand-pill text-on-surface font-code-inline text-code-inline font-medium border border-surface-border-subtle">public/index.php</code>.
+        </p>
+</div>
+<div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle">
+<span class="font-code-inline text-code-inline text-primary bg-matcha-light border border-matcha/20 w-5 h-5 rounded flex items-center justify-center shrink-0 font-semibold">2</span>
+<p class="font-body-sm text-body-sm text-on-surface-medium leading-snug">
+          Only directory <code class="px-1.5 py-0.5 rounded bg-sand-pill text-on-surface font-code-inline text-code-inline font-medium border border-surface-border-subtle">public/</code> is published via Nginx; maintain root for private logic.
+        </p>
+</div>
+<div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle">
+<span class="font-code-inline text-code-inline text-primary bg-matcha-light border border-matcha/20 w-5 h-5 rounded flex items-center justify-center shrink-0 font-semibold">3</span>
+<p class="font-body-sm text-body-sm text-on-surface-medium leading-snug">
+          Query internal services through pre-injected variables: <code class="px-1 py-0.5 rounded bg-sand-pill text-on-surface font-code-inline text-code-inline font-medium border border-surface-border-subtle">getenv('DB_HOST')</code> or <code class="px-1 py-0.5 rounded bg-sand-pill text-on-surface font-code-inline text-code-inline font-medium border border-surface-border-subtle">getenv('REDIS_HOST')</code>.
+        </p>
+</div>
+<div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle">
+<span class="font-code-inline text-code-inline text-primary bg-matcha-light border border-matcha/20 w-5 h-5 rounded flex items-center justify-center shrink-0 font-semibold">4</span>
+<p class="font-body-sm text-body-sm text-on-surface-medium leading-snug">
+          Secrets and forwarded ports live inside <code class="px-1 py-0.5 rounded bg-sand-pill text-on-surface font-code-inline text-code-inline font-medium border border-surface-border-subtle">.env</code>; execute <code class="px-1 py-0.5 rounded bg-sand-pill text-on-surface font-code-inline text-code-inline font-medium border border-surface-border-subtle">make restart</code> to rebind.
+        </p>
+</div>
+</div>
+</section>
+<!-- Active Daemons & Services -->
+<section class="rounded-xl bg-surface-card p-space-md flex flex-col gap-3 border border-surface-border shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-matcha-light text-primary border border-matcha/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">dns</span>
+</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Active Services</h2>
+</div>
+<span class="font-label-table text-label-table uppercase text-on-surface-variant tracking-wider">Local &amp; Mesh</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- PHP-FPM -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">PHP-FPM 8.5.12</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">php:9000</span>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-primary font-code-inline text-code-inline font-medium transition-colors" onclick="copySnippet('make shell')">
+          make shell
+        </button>
+</div>
+<!-- Nginx -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">Nginx Gateway</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">nginx:80</span>
+</div>
+</div>
+<a class="flex items-center gap-1 px-2.5 py-1 rounded bg-primary text-on-primary font-code-inline text-code-inline hover:bg-primary-dark transition-colors shadow-sm" href="http://localhost:8888" target="_blank">
+<span>:8888</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+<!-- MariaDB -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">MariaDB SQL</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">mariadb:3306</span>
+</div>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-on-surface-medium font-code-inline text-code-inline transition-colors" onclick="copySnippet('127.0.0.1:3306')">
+<span>:3306</span>
+<span class="material-symbols-outlined text-[13px] text-on-surface-variant">content_copy</span>
+</button>
+</div>
+<!-- Redis -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">Redis Cache</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">redis:6379</span>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-primary font-code-inline text-code-inline font-medium transition-colors" onclick="copySnippet('make redis')">
+          make redis
+        </button>
+</div>
+<!-- Mailpit -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">Mailpit Inspector</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">mailpit:1025</span>
+</div>
+</div>
+<a class="flex items-center gap-1 px-2.5 py-1 rounded bg-matcha-light border border-matcha/30 text-primary font-code-inline text-code-inline hover:bg-primary hover:text-on-primary transition-all font-medium" href="http://localhost:8025" target="_blank">
+<span>UI :8025</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+<!-- Memcached -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">Memcached</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">memcached:11211</span>
+</div>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-on-surface-medium font-code-inline text-code-inline transition-colors" onclick="copySnippet('127.0.0.1:11211')">
+<span>:11211</span>
+<span class="material-symbols-outlined text-[13px] text-on-surface-variant">content_copy</span>
+</button>
+</div>
+<!-- Mercure Hub -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">Mercure SSE</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">mercure/.well-known</span>
+</div>
+</div>
+<a class="flex items-center gap-1 px-2.5 py-1 rounded bg-sand-pill hover:bg-sand-pill-hover border border-surface-border text-primary font-code-inline text-code-inline font-medium transition-colors" href="http://localhost:3000/.well-known/mercure" target="_blank">
+<span>:3000</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+<!-- Kafka Broker -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-body-md text-on-surface font-medium truncate">Kafka Broker</span>
+<span class="font-code-inline text-code-inline text-on-surface-variant truncate">kafka:9092</span>
+</div>
+</div>
+<span class="font-code-inline text-code-inline text-on-surface-variant px-2 py-0.5 rounded bg-sand-pill border border-surface-border">
+          ENV_BROKERS
+        </span>
+</div>
+</div>
+</section>
+<!-- Commands Station (1-Tap Copy) -->
+<section class="rounded-xl bg-surface-card p-space-md flex flex-col gap-3 border border-surface-border shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-matcha-light text-primary border border-matcha/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Console Palette</h2>
+</div>
+<span class="font-label-table text-label-table uppercase text-on-surface-variant">Tap to copy</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Command Item -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make start')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-primary font-semibold truncate">make start</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Launch container topology</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make stop')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-primary font-semibold truncate">make stop</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Suspend all daemon runtimes</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make composer c=&quot;require vendor/package&quot;')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-primary font-semibold truncate">make composer c="..."</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Install dependency in runtime</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make test')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-matcha font-semibold truncate">make test</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Trigger automated test suite</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make logs-worker')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-primary font-semibold truncate">make logs-worker</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Stream background worker stdout</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make worker-restart')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-primary font-semibold truncate">make worker-restart</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Reload worker code hooks</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle hover:bg-sand-pill-hover active:scale-[0.99] transition-all cursor-pointer" onclick="copySnippet('make help')">
+<div class="flex flex-col min-w-0">
+<span class="font-code-inline text-code-inline text-primary font-semibold truncate">make help</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Display complete command manual</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0 ml-2">copy_all</span>
+</div>
+</div>
+</section>
+<!-- Suggested Extensions -->
+<section class="rounded-xl bg-surface-card p-space-md flex flex-col gap-3 border border-surface-border shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-matcha-light text-primary border border-matcha/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">extension</span>
+</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Suggested Packages</h2>
+</div>
+<span class="font-label-table text-label-table uppercase text-on-surface-variant">Ecosystem</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Mercure Package -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle">
+<div class="flex flex-col min-w-0 pr-2">
+<span class="font-headline-md text-body-md text-on-surface truncate">symfony/mercure</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Real-time SSE updates publisher</span>
+</div>
+<button class="shrink-0 p-2 rounded-lg bg-sand-pill hover:bg-matcha-light text-primary border border-surface-border transition-colors" onclick="copySnippet('make composer c=&quot;require symfony/mercure&quot;')" title="Copy Command">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+<!-- Mailer Package -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-surface-border-subtle">
+<div class="flex flex-col min-w-0 pr-2">
+<span class="font-headline-md text-body-md text-on-surface truncate">symfony/mailer</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Native SMTP dispatch to Mailpit</span>
+</div>
+<button class="shrink-0 p-2 rounded-lg bg-sand-pill hover:bg-matcha-light text-primary border border-surface-border transition-colors" onclick="copySnippet('make composer c=&quot;require symfony/mailer&quot;')" title="Copy Command">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Interactive Utility Footer Strip -->
+<div class="flex items-center justify-between pt-2 px-1 text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+<span class="font-body-sm text-body-sm font-medium">Docker Engine 27.x ready</span>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-card hover:bg-surface-container text-on-surface-medium border border-surface-border transition-colors shadow-2xs" onclick="toggleTheme()">
+<span class="material-symbols-outlined text-[16px] text-matcha" id="theme-btn-icon">light_mode</span>
+<span class="font-code-inline text-code-inline font-medium" id="theme-btn-label">Light Mode</span>
+</button>
+</div>
+</div>
+<script>
+  function copySnippet(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text);
+    } else {
+      const input = document.createElement('textarea');
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+    }
+    showToast(`Copied: ${text}`);
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+    if (!toast || !toastText) return;
+    toastText.textContent = message;
+    toast.classList.remove('opacity-0', 'scale-95');
+    toast.classList.add('opacity-100', 'scale-100');
+    setTimeout(() => {
+      toast.classList.remove('opacity-100', 'scale-100');
+      toast.classList.add('opacity-0', 'scale-95');
+    }, 2200);
+  }
+
+  function toggleSection(contentId, iconId) {
+    const el = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    if (!el) return;
+    if (el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+      if (icon) icon.style.transform = 'rotate(0deg)';
+    } else {
+      el.classList.add('hidden');
+      if (icon) icon.style.transform = 'rotate(180deg)';
+    }
+  }
+
+  function toggleTheme() {
+    showToast('Warm sepia & matcha palette enabled');
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-[#FAF7F2]/95 backdrop-blur-xl border-t border-surface-border shadow-[0_-2px_12px_rgba(45,90,61,0.06)]" data-active-classes="text-primary font-headline-md"><div class="flex justify-around items-center h-16 px-space-xs max-w-[1040px] mx-auto"><a aria-current="page" class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] py-1 transition-colors text-primary font-semibold" data-path="overview" href="#"><span class="material-symbols-outlined text-[22px] font-bold">dashboard</span><span class="font-label-table text-label-table uppercase tracking-wider font-semibold">Nodes</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="services" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-table text-label-table uppercase tracking-wider">Services</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="terminal-logs" href="#"><span class="material-symbols-outlined text-[22px]">code</span><span class="font-label-table text-label-table uppercase tracking-wider">Console</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="ports-routing" href="#"><span class="material-symbols-outlined text-[22px]">hub</span><span class="font-label-table text-label-table uppercase tracking-wider">Routes</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-table text-label-table uppercase tracking-wider">Config</span></a></div></nav></body></html>
