@@ -1,6 +1,6 @@
 services:
   opensearch:
-    image: opensearchproject/opensearch:3
+    image: opensearchproject/opensearch:3.9.0
     container_name: ${PROJECT_NAME_SNAKE_CASE}_opensearch
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${OPENSEARCH_PORT:-9201}:9200"

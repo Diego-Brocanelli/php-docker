@@ -1,6 +1,6 @@
 services:
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     container_name: ${PROJECT_NAME_SNAKE_CASE}_redis
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${REDIS_PORT:-6379}:6379"

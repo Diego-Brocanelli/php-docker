@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:1.28-alpine
+    image: nginx:1.30-alpine
     container_name: ${PROJECT_NAME_SNAKE_CASE}_nginx
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${PROJECT_PORT:-8080}:80"

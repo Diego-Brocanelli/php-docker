@@ -1,6 +1,6 @@
 services:
   mongodb:
-    image: mongo:8
+    image: mongo:8.0
     container_name: ${PROJECT_NAME_SNAKE_CASE}_mongodb
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${DB_PORT:-27017}:27017"
