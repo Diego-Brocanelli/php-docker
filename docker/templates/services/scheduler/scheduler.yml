@@ -1,7 +1,7 @@
 services:
   scheduler:
     # Mesma imagem construída pelo serviço php (não há build próprio)
-    image: ${PROJECT_NAME_SNAKE_CASE}_php:${PHP_VERSION:-8.4}
+    image: ${PROJECT_NAME_SNAKE_CASE}_php:${PHP_VERSION:-8.5}
     pull_policy: never
     container_name: ${PROJECT_NAME_SNAKE_CASE}_scheduler
     working_dir: /var/www/html

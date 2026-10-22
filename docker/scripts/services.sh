@@ -101,12 +101,8 @@ define_project() {
 
 define_php_version() {
     print_section "Which version of PHP do you want to use?"
-    ask_choice PHP_VERSION "PHP version" '8.5' '8.4' '8.3' '8.2'
+    ask_choice PHP_VERSION "PHP version" '8.5' '8.4'
     print_success "PHP version: $PHP_VERSION"
-
-    if [[ "$PHP_VERSION" == "8.2" ]]; then
-        print_warning "PHP 8.2 receives security fixes only until 2026-12-31. Prefer 8.4 or 8.5 for new projects."
-    fi
 }
 
 # Timezone do host (link /etc/localtime ou /etc/timezone); UTC se não for possível detectar

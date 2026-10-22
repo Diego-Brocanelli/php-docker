@@ -4,7 +4,7 @@
 #   dev  -> ambiente de desenvolvimento (usado pelo compose.yml)
 #   prod -> imagem de produção com o código da aplicação (make build-prod)
 
-ARG PHP_VERSION=8.4
+ARG PHP_VERSION=8.5
 ARG NODE_VERSION=24
 
 FROM node:${NODE_VERSION}-slim AS node
@@ -37,20 +37,72 @@ RUN apt-get update -y && \
 
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
 
+# Instala extensões PECL uma a uma; se o PECL estiver fora do ar, compila a tag fixa do GitHub
+# (versões nos ARGs *_VERSION). O clone traz os submódulos que o redis exige; o mongodb não
+# tem package.xml no repositório, então usa o pacote da release.
+COPY --chmod=755 <<'EOF' /usr/local/bin/install-pecl-extensions
+#!/bin/sh
+set -eu
+# Downloads do instalador (PECL e fallback) com novas tentativas em falhas de rede
+export IPE_CURL_FLAGS="${IPE_CURL_FLAGS:---retry 3 --retry-all-errors --connect-timeout 15}"
+for ext in "$@"; do
+    case "$ext" in
+        apcu)      src=krakjoe/apcu@${APCU_VERSION:?} ;;
+        igbinary)  src=igbinary/igbinary@${IGBINARY_VERSION:?} ;;
+        redis)     src=phpredis/phpredis@${REDIS_VERSION:?} ;;
+        yaml)      src=php/pecl-file_formats-yaml@${YAML_VERSION:?} ;;
+        mongodb)   src=https://github.com/mongodb/mongo-php-driver/releases/download/${MONGODB_VERSION:?}/mongodb-${MONGODB_VERSION}.tgz ;;
+        amqp)      src=php-amqp/php-amqp@${AMQP_VERSION:?} ;;
+        memcached) src=php-memcached-dev/php-memcached@${MEMCACHED_VERSION:?} ;;
+        rdkafka)   src=arnaud-lb/php-rdkafka@${RDKAFKA_VERSION:?} ;;
+        xdebug)    src=xdebug/xdebug@${XDEBUG_VERSION:?} ;;
+        # Extensões nativas do PHP (ex.: pdo_pgsql) não dependem do PECL
+        *)         install-php-extensions "$ext"; continue ;;
+    esac
+    install-php-extensions "$ext" && continue
+    echo "PECL indisponível para $ext; compilando $src"
+    dir="/tmp/ext-src/$ext"
+    rm -rf "$dir" && mkdir -p "$dir"
+    case "$src" in
+        https://*)
+            # Pacote no formato PECL: package.xml na raiz e o código em <nome>-<versão>/
+            curl -fsSL --retry 3 --retry-all-errors "$src" | tar -xz -C "$dir"
+            pkg="$(find "$dir" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+            cp "$dir/package.xml" "$pkg/"
+            install-php-extensions "$pkg"
+            ;;
+        *)
+            git clone -q -c advice.detachedHead=false --depth 1 --branch "${src#*@}" \
+                --recurse-submodules --shallow-submodules "https://github.com/${src%@*}.git" "$dir"
+            install-php-extensions "$dir"
+            ;;
+    esac
+    rm -rf "$dir"
+done
+EOF
+
+ARG APCU_VERSION=v5.1.28
+# 3.2.17RC1 é a release marcada como estável no PECL e a primeira compatível com o PHP 8.5
+ARG IGBINARY_VERSION=3.2.17RC1
+ARG REDIS_VERSION=6.3.0
+ARG YAML_VERSION=2.3.0
+ARG MONGODB_VERSION=2.5.5
+ARG AMQP_VERSION=v2.2.0
+ARG MEMCACHED_VERSION=v3.4.0
+ARG RDKAFKA_VERSION=6.0.5
+
 # pdo, openssl, curl, tokenizer e mbstring já vêm compilados na imagem oficial
 RUN install-php-extensions \
-        apcu \
         exif \
         gd \
-        igbinary \
         intl \
         opcache \
         pcntl \
         pdo_mysql \
-        redis \
-        yaml \
-        zip \
-        ${PHP_EXTENSIONS}
+        zip
+
+# igbinary antes do redis, para o redis ser compilado com suporte a ele
+RUN install-pecl-extensions igbinary apcu redis yaml ${PHP_EXTENSIONS}
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
@@ -114,8 +166,7 @@ RUN --mount=type=bind,from=node,source=/usr/local,target=/opt/node \
     fi
 
 # Xdebug: tenta o PECL; se estiver indisponível, compila a partir do GitHub
-RUN install-php-extensions xdebug || \
-    install-php-extensions "xdebug/xdebug@${XDEBUG_VERSION}"
+RUN install-pecl-extensions xdebug
 
 RUN curl -fsSL --retry 5 --retry-all-errors -o /usr/local/bin/dep \
         "https://github.com/deployphp/deployer/releases/download/${DEPLOYER_VERSION}/deployer.phar" && \

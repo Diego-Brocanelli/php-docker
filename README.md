@@ -4,7 +4,7 @@
 
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge\&logo=docker\&logoColor=white)
 ![Make](https://img.shields.io/badge/Make-427819?style=for-the-badge\&logo=gnu\&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-8.2--8.5-777BB4?style=for-the-badge\&logo=php\&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.4--8.5-777BB4?style=for-the-badge\&logo=php\&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-269539?style=for-the-badge\&logo=nginx\&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?style=for-the-badge\&logo=mysql\&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge\&logo=postgresql\&logoColor=white)
@@ -14,7 +14,7 @@
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge\&logo=rabbitmq\&logoColor=white)
 ![Mailpit](https://img.shields.io/badge/Mailpit-0078D7?style=for-the-badge\&logo=maildotru\&logoColor=white)
 
-Um **ambiente Docker moderno para PHP (8.2 a 8.5)**, flexível e pronto para desenvolvimento local, com suporte a múltiplos bancos, serviços e configurações.
+Um **ambiente Docker moderno para PHP (8.4 e 8.5)**, flexível e pronto para desenvolvimento local, com suporte a múltiplos bancos, serviços e configurações.
 
 ## 🎯 Objetivo
 
@@ -23,7 +23,7 @@ Ideal para uso individual ou em equipe.
 
 ## ✨ Principais Características
 
-* ✅ PHP 8.2, 8.3, 8.4 ou 8.5 com extensões otimizadas
+* ✅ PHP 8.4 ou 8.5 com extensões otimizadas
 * ✅ Ambiente **CLI** ou **Web** (com Nginx)
 * ✅ Bancos: MySQL 8.4 (LTS) e 8.0, MariaDB, PostgreSQL, MongoDB
 * ✅ Serviços extras: Mailpit, RabbitMQ, Redis, Memcached, Meilisearch, OpenSearch, Elasticsearch, RustFS (S3), Kafka, Mercure e Selenium

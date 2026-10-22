@@ -230,10 +230,8 @@ $checkSocket = static function (string $host, int $port): ?string {
 $checkHttp = static function (string $url): ?string {
     $context = stream_context_create(['http' => ['timeout' => 1.0, 'ignore_errors' => true]]);
     $body = @file_get_contents($url, false, $context);
-    // PHP 8.4+: http_get_last_response_headers() substitui $http_response_header (obsoleto no 8.5)
-    $headers = function_exists('http_get_last_response_headers')
-        ? (http_get_last_response_headers() ?? [])
-        : ($http_response_header ?? []);
+    // http_get_last_response_headers() substitui $http_response_header (obsoleto no 8.5)
+    $headers = http_get_last_response_headers() ?? [];
     $status = isset($headers[0]) ? (int) (explode(' ', $headers[0])[1] ?? 0) : 0;
 
     if ($body === false || $status === 0) {
@@ -681,19 +679,8 @@ EOL
     } | write_if_missing "$ROOT_DIR/commands/welcome.php"
 }
 
-# Versão do PHPUnit compatível com cada versão do PHP
-phpunit_constraint() {
-    case "$PHP_VERSION" in
-        8.2) printf '^11.5' ;;
-        8.3) printf '^12.5' ;;
-        *)   printf '^13.4' ;;
-    esac
-}
-
 generate_composer_scaffold() {
     local package_name="${PROJECT_NAME_SNAKE_CASE//_/-}"
-    local phpunit_version
-    phpunit_version="$(phpunit_constraint)"
 
     write_if_missing "$ROOT_DIR/composer.json" <<EOL
 {
@@ -707,7 +694,7 @@ generate_composer_scaffold() {
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpstan/phpstan": "^2.3",
-        "phpunit/phpunit": "${phpunit_version}"
+        "phpunit/phpunit": "^13.4"
     },
     "autoload": {
         "psr-4": {

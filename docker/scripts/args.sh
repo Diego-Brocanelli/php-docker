@@ -9,7 +9,7 @@ Without options the setup is interactive. Any option given skips its question.
 
 Project:
   --name <name>               Project name
-  --php <8.5|8.4|8.3|8.2>     PHP version
+  --php <8.5|8.4>             PHP version
   --type <web|api|cli>        Project type
   --port <port>               HTTP port (web/api)
   --timezone <tz>             Timezone, e.g. America/Sao_Paulo

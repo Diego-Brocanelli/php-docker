@@ -5,12 +5,12 @@ services:
       dockerfile: docker/templates/services/php/Dockerfile
       target: dev
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.4}
+        PHP_VERSION: ${PHP_VERSION:-8.5}
         APP_TYPE: ${APP_TYPE:-web}
         PHP_EXTENSIONS: ${PHP_EXTENSIONS:-}
         UID: ${HOST_UID:-1000}
         GID: ${HOST_GID:-1000}
-    image: ${PROJECT_NAME_SNAKE_CASE}_php:${PHP_VERSION:-8.4}
+    image: ${PROJECT_NAME_SNAKE_CASE}_php:${PHP_VERSION:-8.5}
     container_name: ${PROJECT_NAME_SNAKE_CASE}_php
     working_dir: /var/www/html
     volumes:
