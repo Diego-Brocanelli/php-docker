@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [main, v3]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Shell lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bash -n
+        run: for f in docker/setup.sh docker/scripts/*.sh; do bash -n "$f"; done
+      - name: shellcheck
+        run: shellcheck -x docker/setup.sh docker/scripts/*.sh
+
+  setup-matrix:
+    name: Setup ${{ matrix.type }} + ${{ matrix.db }} (services: ${{ matrix.services }})
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        type: [web, api, cli]
+        db: [none, mariadb, mongodb, mysql8.4, mysql8.0, postgresql]
+        services: [none]
+        include:
+          - type: web
+            db: mariadb
+            services: all
+          - type: cli
+            db: postgresql
+            services: all
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run setup (non-interactive)
+        run: |
+          bash docker/setup.sh --name "CI ${{ matrix.type }}" --type ${{ matrix.type }} --db ${{ matrix.db }} \
+            --services ${{ matrix.services }} --redis yes --mailpit yes --rabbitmq yes --composer yes --timezone UTC --yes
+      - name: Generated scaffolds for worker/scheduler
+        if: matrix.services == 'all'
+        run: test -f commands/worker.php && test -f commands/heartbeat.php
+      - name: Validate generated files
+        run: |
+          test -f .env && test -f compose.yml
+          test "$(stat -c %a .env)" = "600"
+          docker compose --env-file .env config -q
+          if [ "${{ matrix.type }}" = "cli" ]; then
+            test -f commands/welcome.php && test ! -d public
+          else
+            test -f public/index.php
+          fi
+          php -l "$( [ "${{ matrix.type }}" = "cli" ] && echo commands/welcome.php || echo public/index.php )"
+
+  build:
+    name: Build PHP ${{ matrix.php }} (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4', '8.5']
+        target: [dev, prod]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/templates/services/php/Dockerfile
+          target: ${{ matrix.target }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php }}
+            APP_TYPE=web
+            PHP_EXTENSIONS=pdo_pgsql mongodb amqp
+          tags: ci-php:${{ matrix.php }}-${{ matrix.target }}
+          load: true
+          cache-from: type=gha,scope=php-${{ matrix.php }}-${{ matrix.target }}
+          cache-to: type=gha,mode=max,scope=php-${{ matrix.php }}-${{ matrix.target }}
+      - name: Check extensions
+        run: |
+          docker run --rm ci-php:${{ matrix.php }}-${{ matrix.target }} php -m | tee modules.txt
+          for ext in pdo_mysql pdo_pgsql mongodb amqp redis intl gd zip apcu; do grep -qix "$ext" modules.txt; done
+          if [ "${{ matrix.target }}" = "dev" ]; then grep -qix xdebug modules.txt; else ! grep -qix xdebug modules.txt; fi
+
+  e2e:
+    name: End-to-end (web + mariadb + redis + mailpit)
+    runs-on: ubuntu-latest
+    needs: [setup-matrix, build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup
+        run: bash docker/setup.sh --name "CI App" --type web --db mariadb --redis yes --mailpit yes --composer yes --timezone UTC --yes
+      - name: Start
+        run: make start
+      - name: Welcome page reports every service as OK
+        run: |
+          html="$(curl -fsS http://localhost:8080)"
+          echo "$html" | grep -q 'Welcome to CI App'
+          ! echo "$html" | grep -q 'Fail'
+      - name: Composer tooling
+        run: |
+          make install
+          make test
+          make stan
+          make lint
+      - name: Database and Redis CLIs
+        run: |
+          echo 'SELECT 1;' | docker compose --env-file .env exec -T mariadb sh -c 'MYSQL_PWD="$MARIADB_PASSWORD" mariadb -u"$MARIADB_USER" "$MARIADB_DATABASE"'
+          docker compose --env-file .env exec -T redis redis-cli ping | grep -q PONG
+      - name: Logs on failure
+        if: failure()
+        run: docker compose --env-file .env logs
+      - name: Stop
+        if: always()
+        run: make clean

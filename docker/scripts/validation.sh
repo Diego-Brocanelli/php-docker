@@ -1,29 +1,60 @@
-check_empty() {
-    local value="$1"
-    local field_name="${2:-Campo}"
-    local default_value="${3:-}"
+#!/usr/bin/env bash
 
-    if [ -z "$value" ]; then
-        if [ -n "$default_value" ]; then
-            echo $default_value
+# Letra inicial, depois letras, números, espaço, _ ou -. Máx. 50 caracteres.
+is_valid_project_name() {
+    [[ "$1" =~ ^[A-Za-z][A-Za-z0-9\ _-]{0,49}$ ]]
+}
 
-            return 0
-        fi
+# Identificadores de banco: nome e usuário
+is_valid_identifier() {
+    [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_]{0,62}$ ]]
+}
 
-        print_error "$field_name não pode ser vazio"
+# Senha: apenas letras, números e . _ ~ ! * + = , -
+# (outros caracteres quebram a interpolação no .env/compose ou URIs como MONGODB_URI)
+is_valid_password() {
+    [[ "$1" =~ ^[A-Za-z0-9._~!*+=,-]+$ ]]
+}
 
-        return 1
+# Timezone IANA, ex.: America/Sao_Paulo. Confere em /usr/share/zoneinfo quando existir.
+is_valid_timezone() {
+    local tz="$1"
+
+    [[ "$tz" =~ ^[A-Za-z0-9_+-]+(/[A-Za-z0-9_+-]+)*$ ]] || return 1
+
+    if [[ -d /usr/share/zoneinfo ]]; then
+        [[ -f "/usr/share/zoneinfo/$tz" ]]
     fi
+}
 
-    return 0
+is_yes_no() {
+    [[ "$1" == "yes" || "$1" == "no" ]]
+}
+
+is_valid_port() {
+    local port="$1"
+
+    [[ "$port" =~ ^[0-9]{1,5}$ ]] || return 1
+    (( 10#$port >= 1 && 10#$port <= 65535 ))
+}
+
+is_port_used() {
+    local port="$1"
+    local used
+
+    for used in "${USED_PORTS[@]}"; do
+        [[ "$used" == "$port" ]] && return 0
+    done
+
+    return 1
 }
 
 file_exists() {
     local file_path="$1"
-    local description="${2:-O arquivo}"  # Descrição do arquivo (opcional)
+    local description="${2:-File}"
 
-    if [ ! -f "$file_path" ]; then
-        print_error "$description não encontrado em: $file_path"
+    if [[ ! -f "$file_path" ]]; then
+        print_error "$description not found: $file_path"
 
         return 1
     fi

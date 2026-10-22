@@ -1,18 +1,39 @@
 services:
   mongodb:
-    image: mongo:7
+    image: mongo:8
     container_name: ${PROJECT_NAME_SNAKE_CASE}_mongodb
     ports:
-      - "${DB_PORT}:27017"
+      - "${BIND_ADDRESS:-127.0.0.1}:${DB_PORT:-27017}:27017"
     volumes:
-      - ../mongodb/storage/data:/data/db
-      - ../mongodb/storage/configs/initdb.d:/docker-entrypoint-initdb.d:ro
+      - mongodb_data:/data/db
+      - ./docker/templates/services/mongodb/config/initdb.d:/docker-entrypoint-initdb.d:ro
     environment:
+      TZ: ${TZ:-UTC}
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
       MONGO_INITDB_DATABASE: ${DB_NAME}
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
     networks:
       - backend
 
+  php:
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: "27017"
+      DB_DATABASE: ${DB_NAME}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PUBLISHED_PORT: "${DB_PORT:-27017}"
+      MONGODB_URI: mongodb://${DB_USER}:${DB_PASSWORD}@mongodb:27017/${DB_NAME}?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
 volumes:
-  data:
+  mongodb_data:

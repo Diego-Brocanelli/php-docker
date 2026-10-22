@@ -1,0 +1,7 @@
+; Renomeie para custom.ini (qualquer *.ini nesta pasta é carregado pelo PHP)
+; e reinicie com: make restart
+
+; memory_limit = 512M
+; upload_max_filesize = 32M
+; post_max_size = 32M
+; date.timezone = America/Sao_Paulo

@@ -1,0 +1,23 @@
+services:
+  memcached:
+    image: memcached:1.6-alpine
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_memcached
+    command: ["memcached", "-m", "128"]
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${MEMCACHED_PORT:-11211}:11211"
+    environment:
+      TZ: ${TZ:-UTC}
+    healthcheck:
+      test: ["CMD-SHELL", "echo stats | nc -w 1 127.0.0.1 11211 | grep -q uptime"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - backend
+
+  php:
+    environment:
+      MEMCACHED_HOST: memcached
+      MEMCACHED_PORT: "11211"
+      MEMCACHED_PUBLISHED_PORT: "${MEMCACHED_PORT:-11211}"

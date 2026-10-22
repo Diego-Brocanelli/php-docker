@@ -1,0 +1,28 @@
+services:
+  scheduler:
+    # Mesma imagem construída pelo serviço php (não há build próprio)
+    image: ${PROJECT_NAME_SNAKE_CASE}_php:${PHP_VERSION:-8.4}
+    pull_policy: never
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_scheduler
+    working_dir: /var/www/html
+    command: ["supercronic", "-passthrough-logs", "/var/www/html/docker/templates/services/scheduler/crontab"]
+    volumes:
+      - ./:/var/www/html
+      - ./docker/templates/services/php/config:/usr/local/etc/php/custom.d:ro
+    # As variáveis dos serviços (DB_HOST, REDIS_HOST...) são copiadas do serviço php pelo setup
+    environment:
+      APP_NAME: ${PROJECT_NAME}
+      APP_TYPE: ${APP_TYPE:-web}
+      TZ: ${TZ:-UTC}
+      PHP_INI_SCAN_DIR: ":/usr/local/etc/php/custom.d"
+      XDEBUG_MODE: "off"
+    depends_on:
+      php:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend
+
+  php:
+    environment:
+      SCHEDULER_ENABLED: "true"

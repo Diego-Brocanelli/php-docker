@@ -1,0 +1,31 @@
+# Contexto de build = raiz do projeto. Apenas o necessário vai para a imagem de produção.
+.git
+.gitignore
+.gitattributes
+.dockerignore
+.editorconfig
+.github
+.idea
+.vscode
+.env
+.env.*
+compose.yml
+Makefile
+*.md
+*.log
+LICENSE
+docs
+node_modules
+vendor
+tests
+.phpunit.cache
+.phpunit.result.cache
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
+phpstan.neon.dist
+phpunit.xml.dist
+
+# Do diretório docker/ só entram os arquivos usados pelos Dockerfiles
+docker
+!docker/templates/services/php/fpm/zz-app.conf
+!docker/templates/services/nginx/config/default.conf

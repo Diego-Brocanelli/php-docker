@@ -1,48 +1,57 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# shellcheck source-path=SCRIPTDIR
 
 set -euo pipefail
+shopt -s inherit_errexit 2>/dev/null || true
+
+SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Importação de funções e variáveis
-source "scripts/variables.sh"
-source "scripts/colors.sh"
-source "scripts/validation.sh"
-source "scripts/files.sh"
-source "scripts/form.sh"
-source "scripts/text.sh"
-source "scripts/health_check.sh"
-source "scripts/project.sh"
-source "scripts/services.sh"
+source "$SETUP_DIR/scripts/variables.sh"
+source "$SETUP_DIR/scripts/colors.sh"
+source "$SETUP_DIR/scripts/text.sh"
+source "$SETUP_DIR/scripts/validation.sh"
+source "$SETUP_DIR/scripts/form.sh"
+source "$SETUP_DIR/scripts/files.sh"
+source "$SETUP_DIR/scripts/health_check.sh"
+source "$SETUP_DIR/scripts/project.sh"
+source "$SETUP_DIR/scripts/services.sh"
+source "$SETUP_DIR/scripts/args.sh"
+
+# Garante que o terminal volte a ecoar caso o setup seja interrompido durante uma senha
+trap 'stty echo 2>/dev/null || true' EXIT
+trap 'printf "\n" >&2; print_error "Setup cancelled."; exit 130' INT
+
+parse_args "$@"
 
 print_banner
 
 check_dependency
+
+if [[ -f "$ENV_FILE" || -f "$COMPOSE_FILE" ]]; then
+    print_section "Existing configuration found"
+    print_warning "The files .env and/or compose.yml already exist and will be overwritten."
+    if ! confirm "Continue?"; then
+        print_info "Nothing was changed."
+        exit 0
+    fi
+fi
+
 # =======================================
 # Base
 # =======================================
-
-print_section "What is the name of the project?"
-PROJECT_NAME=$(define_project_name)
-PROJECT_NAMESPACE=$(to_namespace "$PROJECT_NAME")
-PROJECT_NAME_LOWERCASE=$(to_lower "$PROJECT_NAME")
-PROJECT_NAME_SNAKE_CASE=$(replace_char "$PROJECT_NAME_LOWERCASE" " " "_")
-
-print_success "Project name: $PROJECT_NAME"
-print_success "Namespace: $PROJECT_NAMESPACE"
-print_success "To lower: $PROJECT_NAME_LOWERCASE"
-print_success "Snake case: $PROJECT_NAME_SNAKE_CASE"
-
-defien_php_version
-
+define_project
+define_php_version
+define_timezone
 define_app_type
-
 define_database
 
 # =======================================
 # Extra services
 # =======================================
-mailhog
-rabbitmq
-redis
+define_extra_services
+
+define_composer_scaffold
 
 # =======================================
 # Generate files
@@ -51,53 +60,37 @@ print_section "Generating files"
 
 generate_env_file
 
-if [ ! -f  "${SERVICES_ROOT_DIR}/php$PHP_VERSION.yml" ]; then
-    SERVICES_FILES+=("${SERVICES_ROOT_DIR}/php${PHP_VERSION,,}/php${PHP_VERSION,,}.yml")
+# O PHP vem primeiro: os demais arquivos complementam o serviço "php" (environment, depends_on)
+SERVICES_FILES+=("$SERVICES_ROOT_DIR/php/php.yml")
+
+if [[ "$APP_TYPE" == "web" || "$APP_TYPE" == "api" ]]; then
+    SERVICES_FILES+=("$SERVICES_ROOT_DIR/nginx/nginx.yml")
 fi
 
-if [[ $APP_TYPE = "web" || $APP_TYPE = "api" ]]; then
-    # Exemplo de uso
-    TEMPLATE_FILE="${SERVICES_ROOT_DIR}/nginx/config/default.base.template.conf"
-    OUTPUT_FILE="${SERVICES_ROOT_DIR}/nginx/config/default.base.conf"
+if [[ "$DATABASE" != "none" ]]; then
+    SERVICES_FILES+=("$SERVICES_ROOT_DIR/$DATABASE/$DATABASE.yml")
+    create_config_dirs "$DATABASE" initdb.d
 
-    rm output_file 2>/dev/null || true
-
-    replace_template_vars "$TEMPLATE_FILE" "$OUTPUT_FILE" "$PROJECT_NAME_SNAKE_CASE"
-
-    SERVICES_FILES+=("${SERVICES_ROOT_DIR}/nginx/nginx.yml")
+    if [[ "$DATABASE" == "mariadb" || "$DATABASE" == mysql* ]]; then
+        create_config_dirs "$DATABASE" conf.d
+    fi
 fi
 
-if [[ "$DATABASE" != "none" && ! -f "${SERVICES_ROOT_DIR}/${DATABASE,,}.yml" ]]; then
-    SERVICES_FILES+=("${SERVICES_ROOT_DIR}/$DATABASE/${DATABASE,,}.yml")
+for service in "${SELECTED_SERVICES[@]}"; do
+    SERVICES_FILES+=("$SERVICES_ROOT_DIR/$service/$service.yml")
+done
+
+for file in "${SERVICES_FILES[@]}"; do
+    file_exists "$file" "Compose template" || exit 1
+done
+
+print_section "Generating the $(to_upper "$APP_TYPE") project structure"
+print_info "Existing files are never overwritten."
+generate_app_entrypoint
+
+if [[ "$COMPOSER_SCAFFOLD" == "yes" ]]; then
+    generate_composer_scaffold
 fi
-
-if [ "$MAILHOG" == "yes" ]; then
-    SERVICES_FILES+=("${SERVICES_ROOT_DIR}/mailhog/mailhog.yml")
-fi
-
-if [ "$RABBITMQ" == "yes" ]; then
-    SERVICES_FILES+=("${SERVICES_ROOT_DIR}/rabbitmq/rabbitmq.yml")
-fi
-
-if [ "$REDIS" == "yes" ]; then
-    SERVICES_FILES+=("${SERVICES_ROOT_DIR}/redis/redis.yml")
-fi
-
-print_section "Would you like to use the suggested structure?"
-SCAFFOLD=$(choiceOption 'minimal' 'full' 'no')
-if [ "$SCAFFOLD" == "minimal" ]; then
-    print_success "Generating scaffold with minimal structure"
-
-    generate_scaffold_minimal
-elif [ "$SCAFFOLD" == "full" ]; then
-    print_success "Generating scaffold with full structure"
-
-    generate_scaffold_full
-else
-    print_success "Skipping scaffold generation"
-fi
-
-touch "$ROOT_DIR/.env"
 
 # Construir argumentos -f
 compose_args=()
@@ -105,13 +98,37 @@ for file in "${SERVICES_FILES[@]}"; do
     compose_args+=("-f" "$file")
 done
 
-if docker compose --env-file "$ROOT_DIR/.env" "${compose_args[@]}" config > "$ROOT_DIR/compose.yml"; then
-    # Remove caminho absoluto para ficar relativo
-    sed -i "s|$ROOT_DIR|.|g" "$ROOT_DIR/compose.yml"
-    print_info "compose.yml file generated in: $ROOT_DIR/compose.yml"
+# worker/scheduler recebem as mesmas variáveis de serviços que o php
+php_like_services=()
+for service in worker scheduler; do
+    has_service "$service" && php_like_services+=("$service")
+done
+if (( ${#php_like_services[@]} > 0 )); then
+    env_override="$(mktemp)"
+    trap 'rm -f "$env_override"; stty echo 2>/dev/null || true' EXIT
+    php_env_override "$env_override" "${php_like_services[@]}"
+    compose_args+=("-f" "$env_override")
+fi
+
+# --no-interpolate mantém as referências ${VAR}: o .env continua sendo lido em tempo de execução
+if compose_content="$(docker compose \
+        --project-directory "$ROOT_DIR" \
+        --env-file "$ENV_FILE" \
+        "${compose_args[@]}" \
+        config --no-interpolate)"; then
+    # Remove o caminho absoluto para que o compose.yml fique portável
+    compose_content="${compose_content//"$ROOT_DIR"/.}"
+    printf '%s\n' "$compose_content" > "$COMPOSE_FILE"
+    print_info "compose.yml file generated in: $COMPOSE_FILE"
 else
     print_error "Failed to generate compose.yml"
     exit 1
 fi
 
 print_finish_banner
+
+if [[ "$APP_TYPE" == "cli" ]]; then
+    print_info "After 'make start', see the welcome guide with: make php c=commands/welcome.php"
+else
+    print_info "After 'make start', open http://localhost:$PROJECT_PORT to see the welcome guide"
+fi

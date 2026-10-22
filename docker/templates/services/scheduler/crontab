@@ -1,0 +1,8 @@
+# Tarefas agendadas executadas pelo serviço "scheduler" (supercronic).
+# Formato cron padrão; os comandos rodam dentro do container PHP, em /var/www/html.
+# Após editar este arquivo: make restart
+#
+# ┌ minuto ┬ hora ┬ dia do mês ┬ mês ┬ dia da semana
+# *        *      *            *     *
+
+* * * * * php /var/www/html/commands/heartbeat.php

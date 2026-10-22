@@ -9,8 +9,11 @@ indent_style = space
 [*.php]
 indent_size = 4
 
-[*.{js, json}]
+[*.{js,json,yml,yaml}]
 indent_size = 2
+
+[*.sh]
+indent_size = 4
 
 [Makefile]
 indent_style = tab

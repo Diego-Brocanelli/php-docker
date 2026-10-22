@@ -1,78 +1,103 @@
+#!/usr/bin/env bash
+
+# Desenha uma caixa com as linhas recebidas, centralizadas
+print_box() {
+    local width=54
+    local line pad_left pad_right
+    local border
+    border="$(printf '═%.0s' $(seq 1 "$width"))"
+
+    printf '\n%s╔%s╗%s\n' "$MAGENTA" "$border" "$NC" >&2
+    printf '%s║%*s║%s\n' "$MAGENTA" "$width" '' "$NC" >&2
+    for line in "$@"; do
+        if (( ${#line} > width - 2 )); then
+            line="${line:0:width-2}"
+        fi
+        pad_left=$(( (width - ${#line}) / 2 ))
+        pad_right=$(( width - ${#line} - pad_left ))
+        printf '%s║%*s%s%*s║%s\n' "$MAGENTA" "$pad_left" '' "$line" "$pad_right" '' "$NC" >&2
+    done
+    printf '%s║%*s║%s\n' "$MAGENTA" "$width" '' "$NC" >&2
+    printf '%s╚%s╝%s\n\n' "$MAGENTA" "$border" "$NC" >&2
+}
+
 print_banner() {
-    gum style \
-        --foreground 212 --border-foreground 212 --border double \
-        --align center --width 50 --margin "1 2" --padding "2 4" \
-            'Welcome to PHP Docker' 'Starting the project setup.'
+    print_box 'Welcome to PHP Docker' 'Starting the project setup.'
 }
 
 print_finish_banner() {
-    gum style \
-        --foreground 212 --border-foreground 212 --border double \
-        --align center --width 50 --margin "1 2" --padding "2 4" \
-            'Setup completed successfully!' 'Run "make up" to start the services.' "Main terminal commands:" " - make help - To see the available commands" " - make start - To start the services" " - make stop - To stop the services" " - make shell - To access the PHP container" " - make restart - To restart the services" " - make rebuild - To rebuild the services"  "Thank you for using PHP Docker! 🚀"
+    print_box \
+        'Setup completed successfully!' \
+        '' \
+        'Main terminal commands:' \
+        'make help    - Show the available commands' \
+        'make start   - Start the services' \
+        'make stop    - Stop the services' \
+        'make shell   - Access the PHP container' \
+        'make restart - Restart the services' \
+        'make rebuild - Rebuild the services' \
+        '' \
+        'Thank you for using PHP Docker!'
 }
 
 print_success() {
-    echo -e "${NC}....${GREEN}✓ $1${NC}" >&2
+    printf '%s....%s✓ %s%s\n' "$NC" "$GREEN" "$1" "$NC" >&2
 }
 
 print_info() {
-    echo -e "${NC}....${CYAN}$1${NC}" >&2
+    printf '%s....%s%s%s\n' "$NC" "$CYAN" "$1" "$NC" >&2
+}
+
+print_warning() {
+    printf '%s....%s! %s%s\n' "$NC" "$YELLOW" "$1" "$NC" >&2
 }
 
 print_error() {
-    echo -e "${NC}....${RED}✗ $1${NC}" >&2
+    printf '%s....%s✗ %s%s\n' "$NC" "$RED" "$1" "$NC" >&2
 }
 
-print() {
-    echo -e "${NC}$1${NC}" >&2
-}
-
-# Nova função para quando precisar de quebra de linha antes
 print_section() {
-    echo -e "${CYAN}▶ $1${NC}" >&2  # Adicione >&2 aqui
+    printf '\n%s%s▶ %s%s\n' "$BOLD" "$CYAN" "$1" "$NC" >&2
 }
 
 to_lower() {
-    local text="$1"
-    echo "$text" | tr '[:upper:]' '[:lower:]'
+    printf '%s' "${1,,}"
 }
 
-# Converte texto para maiúsculo
 to_upper() {
-    local text="$1"
-    echo "$text" | tr '[:lower:]' '[:upper:]'
+    printf '%s' "${1^^}"
 }
 
+# "my cool-app" -> "MyCoolApp"
 to_namespace() {
     local text="$1"
+    local word first rest result=""
 
-    # Remove espaços e converte para PascalCase
-    echo "$text" | sed 's/[^a-zA-Z0-9 ]//g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1' | sed 's/ //g'
-}
+    text="${text//[^a-zA-Z0-9]/ }"
+    for word in $text; do
+        first="${word:0:1}"
+        rest="${word:1}"
+        result+="${first^^}${rest,,}"
+    done
 
-# Substitui todas as ocorrências de um caractere por outro
-replace_char() {
-    local text="$1"
-    local old_char="$2"
-    local new_char="$3"
-    
-    if [ -z "$old_char" ]; then
-        print_error "Caractere a ser substituído não informado"
-        return 1
+    # Namespace PHP não pode começar com número
+    if [[ "$result" =~ ^[0-9] ]]; then
+        result="App$result"
     fi
-    
-    echo "$text" | tr "$old_char" "$new_char"
+
+    printf '%s' "$result"
 }
 
-replace_template_vars()
-{
-    local template_file="$1"
-    local output_file="$2"
-    local project_name="$3"
-    
-    # Lê o template e substitui PROJECT_NAME pelo valor real
-    sed "s/PROJECT_NAME/${project_name}/g" "$template_file" > "$output_file"
-    
-    print_success "Config file generated: $output_file"
+# "My Cool-App" -> "my_cool_app"
+to_snake_case() {
+    local text="${1,,}"
+
+    text="${text//[^a-z0-9]/_}"
+    while [[ "$text" == *__* ]]; do
+        text="${text//__/_}"
+    done
+    text="${text#_}"
+    text="${text%_}"
+
+    printf '%s' "$text"
 }

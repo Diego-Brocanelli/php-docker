@@ -2,12 +2,28 @@ services:
   redis:
     image: redis:7-alpine
     container_name: ${PROJECT_NAME_SNAKE_CASE}_redis
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${REDIS_PORT:-6379}:6379"
     volumes:
-      - ../redis/storage/data:/data
-      - ../redis/config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis_data:/data
+      - ./docker/templates/services/redis/config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    environment:
+      TZ: ${TZ:-UTC}
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
     networks:
       - backend
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+
+  php:
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PUBLISHED_PORT: "${REDIS_PORT:-6379}"
 
 volumes:
-  data:
+  redis_data:

@@ -1,0 +1,30 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.55
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_meilisearch
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${MEILISEARCH_PORT:-7700}:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    environment:
+      TZ: ${TZ:-UTC}
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY:?MEILISEARCH_KEY is required}
+      MEILI_NO_ANALYTICS: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:7700/health || wget -qO- http://127.0.0.1:7700/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - backend
+
+  php:
+    environment:
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_KEY: ${MEILISEARCH_KEY}
+      MEILISEARCH_URL: http://localhost:${MEILISEARCH_PORT:-7700}
+
+volumes:
+  meilisearch_data:

@@ -1,18 +1,33 @@
-
 services:
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4-management-alpine
     container_name: ${PROJECT_NAME_SNAKE_CASE}_rabbitmq
+    hostname: rabbitmq
     ports:
-      - "${RABBITMQ_PORT}:5672"       # porta para apps se conectarem
-      - "${RABBITMQ_WEB_PORT}:15672"  # porta da interface web de administração
+      - "${BIND_ADDRESS:-127.0.0.1}:${RABBITMQ_PORT:-5672}:5672"      # porta para apps se conectarem
+      - "${BIND_ADDRESS:-127.0.0.1}:${RABBITMQ_WEB_PORT:-15672}:15672" # interface web de administração
     volumes:
-      - ../rabbitmq/storage/data:/var/lib/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: ${DB_USER:-app}
-      RABBITMQ_DEFAULT_PASS: ${DB_PASSWORD:-app}
+      TZ: ${TZ:-UTC}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
     networks:
       - backend
 
+  php:
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_MANAGEMENT_URL: http://localhost:${RABBITMQ_WEB_PORT:-15672}
+
 volumes:
-  data:
+  rabbitmq_data:

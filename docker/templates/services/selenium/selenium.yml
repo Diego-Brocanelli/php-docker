@@ -1,0 +1,26 @@
+services:
+  selenium:
+    image: selenium/standalone-chromium:155.0
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_selenium
+    shm_size: 2gb
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${SELENIUM_PORT:-4444}:4444"      # WebDriver
+      - "${BIND_ADDRESS:-127.0.0.1}:${SELENIUM_VNC_PORT:-7900}:7900"  # noVNC (senha: secret)
+    environment:
+      TZ: ${TZ:-UTC}
+      SE_NODE_MAX_SESSIONS: 2
+      SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4444/status | grep -q '\"ready\": *true'"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - backend
+
+  php:
+    environment:
+      SELENIUM_URL: http://selenium:4444
+      SELENIUM_VNC_URL: http://localhost:${SELENIUM_VNC_PORT:-7900}

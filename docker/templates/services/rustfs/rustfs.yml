@@ -1,0 +1,35 @@
+services:
+  rustfs:
+    image: rustfs/rustfs:1.0.3
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_rustfs
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${RUSTFS_PORT:-9000}:9000"          # API S3
+      - "${BIND_ADDRESS:-127.0.0.1}:${RUSTFS_CONSOLE_PORT:-9001}:9001"  # console web
+    volumes:
+      - rustfs_data:/data
+    environment:
+      TZ: ${TZ:-UTC}
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:?RUSTFS_SECRET_KEY is required}
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_ENVIRONMENT: development
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health >/dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - backend
+
+  php:
+    environment:
+      AWS_ENDPOINT: http://rustfs:9000
+      AWS_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY}
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_USE_PATH_STYLE_ENDPOINT: "true"
+      RUSTFS_CONSOLE_URL: http://localhost:${RUSTFS_CONSOLE_PORT:-9001}
+
+volumes:
+  rustfs_data:

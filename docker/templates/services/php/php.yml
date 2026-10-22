@@ -1,0 +1,46 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/templates/services/php/Dockerfile
+      target: dev
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        APP_TYPE: ${APP_TYPE:-web}
+        PHP_EXTENSIONS: ${PHP_EXTENSIONS:-}
+        UID: ${HOST_UID:-1000}
+        GID: ${HOST_GID:-1000}
+    image: ${PROJECT_NAME_SNAKE_CASE}_php:${PHP_VERSION:-8.4}
+    container_name: ${PROJECT_NAME_SNAKE_CASE}_php
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/templates/services/php/config:/usr/local/etc/php/custom.d:ro
+      - composer_cache:/composer-cache
+    environment:
+      APP_NAME: ${PROJECT_NAME}
+      APP_TYPE: ${APP_TYPE:-web}
+      APP_URL: http://localhost:${PROJECT_PORT:-8080}
+      TZ: ${TZ:-UTC}
+      PHP_IDE_CONFIG: serverName=docker
+      # O ":" inicial mantém o diretório padrão e acrescenta os .ini de config/
+      PHP_INI_SCAN_DIR: ":/usr/local/etc/php/custom.d"
+      XDEBUG_MODE: ${XDEBUG_MODE:-debug,coverage}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "php-fpm-healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - backend
+
+volumes:
+  composer_cache:
+
+networks:
+  backend:
+    driver: bridge
