@@ -1,0 +1,701 @@
+<?php
+
+declare(strict_types=1);
+
+$env = static fn (string $name, string $default = ''): string => (string) (getenv($name) ?: $default);
+
+$project = [
+    'name' => $env('APP_NAME', 'PHP Docker'),
+    'type' => $env('APP_TYPE', 'web'),
+    'url' => $env('APP_URL'),
+    'timezone' => date_default_timezone_get(),
+];
+
+// Retorna null quando a porta responde ou a mensagem de erro
+$checkSocket = static function (string $host, int $port): ?string {
+    $socket = @fsockopen($host, $port, $errno, $error, 1.0);
+    if ($socket === false) {
+        return $error !== '' ? $error : "connection failed ({$errno})";
+    }
+    fclose($socket);
+
+    return null;
+};
+
+// Retorna null quando a URL responde com HTTP 2xx ou a mensagem de erro
+$checkHttp = static function (string $url): ?string {
+    $context = stream_context_create(['http' => ['timeout' => 1.0, 'ignore_errors' => true]]);
+    $body = @file_get_contents($url, false, $context);
+    // http_get_last_response_headers() substitui $http_response_header (obsoleto no 8.5)
+    $headers = http_get_last_response_headers() ?? [];
+    $status = isset($headers[0]) ? (int) (explode(' ', $headers[0])[1] ?? 0) : 0;
+
+    if ($body === false || $status === 0) {
+        return 'connection failed';
+    }
+
+    return $status >= 200 && $status < 300 ? null : "HTTP {$status}";
+};
+
+$extensions = get_loaded_extensions();
+$opcache = function_exists('opcache_get_status') ? (opcache_get_status(false) ?: []) : [];
+$jit = !empty($opcache['jit']['on']);
+
+// 'command' é opcional: comando make sugerido na linha do serviço (só na página web)
+$services = [[
+    'name' => 'PHP-FPM ' . PHP_VERSION,
+    'internal' => 'php:9000',
+    'external' => '',
+    'details' => sprintf('%d extensions • OPcache %s', count($extensions), !empty($opcache['opcache_enabled']) ? ($jit ? 'on, JIT on' : 'on') : 'off'),
+    'command' => 'make shell',
+    'error' => null,
+]];
+
+if ($project['type'] !== 'cli') {
+    $services[] = [
+        'name' => 'Nginx',
+        'internal' => 'nginx:80',
+        'external' => $project['url'],
+        'details' => 'Reverse proxy (FastCGI to php:9000)',
+        'command' => 'make logs-nginx',
+        'error' => null,
+    ];
+}
+
+$dbConnection = $env('DB_CONNECTION');
+if ($dbConnection !== '') {
+    $host = $env('DB_HOST');
+    $port = (int) $env('DB_PORT');
+    $error = null;
+
+    if ($dbConnection === 'mongodb') {
+        $error = $checkSocket($host, $port);
+    } else {
+        try {
+            new PDO(
+                sprintf('%s:host=%s;port=%d;dbname=%s', $dbConnection, $host, $port, $env('DB_DATABASE')),
+                $env('DB_USERNAME'),
+                $env('DB_PASSWORD'),
+                [PDO::ATTR_TIMEOUT => 2, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION],
+            );
+        } catch (Throwable $exception) {
+            $error = $exception->getMessage();
+        }
+    }
+
+    $services[] = [
+        'name' => match ($host) {
+            'mariadb' => 'MariaDB',
+            'mysql' => 'MySQL',
+            'postgresql' => 'PostgreSQL',
+            'mongodb' => 'MongoDB',
+            default => $host,
+        },
+        'internal' => "{$host}:{$port}",
+        'external' => '127.0.0.1:' . $env('DB_PUBLISHED_PORT'),
+        'details' => sprintf('database: %s, user: %s (env DB_*)', $env('DB_DATABASE'), $env('DB_USERNAME')),
+        'command' => match ($host) {
+            'mariadb' => 'make mariadb',
+            'mysql' => 'make mysql',
+            'postgresql' => 'make postgres',
+            'mongodb' => 'make mongo',
+            default => null,
+        },
+        'error' => $error,
+    ];
+}
+
+if ($env('REDIS_HOST') !== '') {
+    $host = $env('REDIS_HOST');
+    $port = (int) $env('REDIS_PORT', '6379');
+    $error = null;
+
+    if (class_exists(Redis::class)) {
+        try {
+            $redis = new Redis();
+            // O phpredis emite um warning além de lançar a exceção; o erro já aparece na tabela
+            @$redis->connect($host, $port, 1.0);
+            $redis->ping();
+        } catch (Throwable $exception) {
+            $error = $exception->getMessage();
+        }
+    } else {
+        $error = $checkSocket($host, $port);
+    }
+
+    $services[] = [
+        'name' => 'Redis',
+        'internal' => "{$host}:{$port}",
+        'external' => '127.0.0.1:' . $env('REDIS_PUBLISHED_PORT'),
+        'details' => 'env REDIS_*',
+        'command' => 'make redis',
+        'error' => $error,
+    ];
+}
+
+if ($env('MAIL_HOST') !== '') {
+    $host = $env('MAIL_HOST');
+    $port = (int) $env('MAIL_PORT', '1025');
+
+    $services[] = [
+        'name' => 'Mailpit',
+        'internal' => "{$host}:{$port} (SMTP)",
+        'external' => $env('MAILPIT_URL'),
+        'details' => 'Web UI to inspect sent e-mails (env MAIL_*)',
+        'error' => $checkSocket($host, $port),
+    ];
+}
+
+if ($env('RABBITMQ_HOST') !== '') {
+    $host = $env('RABBITMQ_HOST');
+    $port = (int) $env('RABBITMQ_PORT', '5672');
+
+    $services[] = [
+        'name' => 'RabbitMQ',
+        'internal' => "{$host}:{$port}",
+        'external' => $env('RABBITMQ_MANAGEMENT_URL'),
+        'details' => sprintf('user: %s (env RABBITMQ_*)', $env('RABBITMQ_USER')),
+        'error' => $checkSocket($host, $port),
+    ];
+}
+
+if ($env('MEMCACHED_HOST') !== '') {
+    $host = $env('MEMCACHED_HOST');
+    $port = (int) $env('MEMCACHED_PORT', '11211');
+
+    $services[] = [
+        'name' => 'Memcached',
+        'internal' => "{$host}:{$port}",
+        'external' => '127.0.0.1:' . $env('MEMCACHED_PUBLISHED_PORT'),
+        'details' => 'env MEMCACHED_*',
+        'error' => $checkSocket($host, $port),
+    ];
+}
+
+$httpServices = [
+    // variável do host => [nome, caminho de health, variável da URL externa, detalhes]
+    'MEILISEARCH_HOST' => ['Meilisearch', '/health', 'MEILISEARCH_URL', 'master key in env MEILISEARCH_KEY'],
+    'OPENSEARCH_HOST' => ['OpenSearch', '/_cluster/health', 'OPENSEARCH_URL', 'env OPENSEARCH_HOST'],
+    'ELASTICSEARCH_HOST' => ['Elasticsearch', '/_cluster/health', 'ELASTICSEARCH_URL', 'env ELASTICSEARCH_HOST'],
+    'AWS_ENDPOINT' => ['RustFS (S3)', '/health', 'RUSTFS_CONSOLE_URL', 'console link; credentials in env AWS_*'],
+    'MERCURE_URL' => ['Mercure', '', 'MERCURE_PUBLIC_URL', 'JWT secret/issuer in env MERCURE_JWT_*'],
+    'SELENIUM_URL' => ['Selenium', '/status', 'SELENIUM_VNC_URL', 'watch the browser via noVNC (password: secret)'],
+];
+
+foreach ($httpServices as $variable => [$name, $healthPath, $externalVariable, $details]) {
+    $url = $env($variable);
+    if ($url === '') {
+        continue;
+    }
+
+    // Mercure: a raiz do servidor responde 200 (o hub em si exige autenticação)
+    $healthUrl = $variable === 'MERCURE_URL'
+        ? preg_replace('#/\.well-known/mercure$#', '/', $url)
+        : rtrim($url, '/') . $healthPath;
+
+    $services[] = [
+        'name' => $name,
+        'internal' => preg_replace('#^https?://#', '', $url),
+        'external' => $env($externalVariable),
+        'details' => $details,
+        'error' => $checkHttp((string) $healthUrl),
+    ];
+}
+
+if ($env('KAFKA_BROKERS') !== '') {
+    [$host, $port] = explode(':', $env('KAFKA_BROKERS')) + [1 => '9092'];
+
+    $services[] = [
+        'name' => 'Kafka',
+        'internal' => $env('KAFKA_BROKERS'),
+        'external' => '',
+        'details' => 'env KAFKA_BROKERS',
+        'error' => $checkSocket($host, (int) $port),
+    ];
+}
+
+// Resumo exibido nos cards da página web
+$failures = count(array_filter($services, static fn (array $service): bool => $service['error'] !== null));
+$hostname = (string) gethostname();
+$container = [
+    'hostname' => $hostname,
+    'ip' => $hostname !== '' ? gethostbyname($hostname) : '',
+    'memory_limit' => (string) ini_get('memory_limit'),
+    'memory_usage' => round(memory_get_peak_usage() / 1048576, 1),
+];
+
+// Pacotes Composer sugeridos para os serviços em uso
+$packages = array_filter([
+    'meilisearch/meilisearch-php' => $env('MEILISEARCH_HOST') !== '' ? 'Meilisearch client' : null,
+    'opensearch-project/opensearch-php' => $env('OPENSEARCH_HOST') !== '' ? 'OpenSearch client' : null,
+    'elasticsearch/elasticsearch' => $env('ELASTICSEARCH_HOST') !== '' ? 'Elasticsearch client' : null,
+    'aws/aws-sdk-php' => $env('AWS_ENDPOINT') !== '' ? 'S3 client (use AWS_ENDPOINT and path-style)' : null,
+    'symfony/mercure' => $env('MERCURE_URL') !== '' ? 'Publish Mercure updates' : null,
+    'php-webdriver/webdriver' => $env('SELENIUM_URL') !== '' ? 'Drive the browser in end-to-end tests' : null,
+    'php-amqplib/php-amqplib' => $env('RABBITMQ_HOST') !== '' ? 'RabbitMQ client (or use ext-amqp)' : null,
+    'symfony/mailer' => $env('MAIL_HOST') !== '' ? 'Send e-mails to Mailpit' : null,
+]);
+
+$commands = [
+    'make start' => 'Start the containers',
+    'make stop' => 'Stop the containers',
+    'make shell' => 'Open a shell inside the PHP container',
+    'make logs' => 'Follow the logs of all services',
+    'make composer c="require vendor/package"' => 'Run Composer inside the container',
+    'make test' => 'Run PHPUnit',
+    'make help' => 'List all available commands',
+];
+
+if ($env('WORKER_ENABLED') !== '') {
+    $commands['make logs-worker'] = 'Follow the worker output';
+    $commands['make worker-restart'] = 'Restart the worker after changing its code';
+}
+
+if ($env('SCHEDULER_ENABLED') !== '') {
+    $commands['make logs-scheduler'] = 'Follow the scheduled jobs output';
+}
+
+$commonSteps = [
+    'Inside the containers, connect to services using the variables already set in PHP: getenv(\'DB_HOST\'), getenv(\'REDIS_HOST\')...',
+    'Credentials and ports live in the .env file; run "make restart" after changing them.',
+];
+
+$wiring = array_values(array_filter([
+    $env('DB_CONNECTION') !== '' ? "getenv('DB_HOST')" : null,
+    $env('REDIS_HOST') !== '' ? "getenv('REDIS_HOST')" : null,
+])) ?: ["getenv('APP_URL')"];
+
+$nextSteps = [
+    ['title' => 'Entry script', 'text' => 'Replace this page by editing your application entry point.', 'copy' => ['public/index.php']],
+    ['title' => 'Document root', 'text' => 'Only the public/ directory is served by Nginx; keep the rest of the code outside of it.', 'copy' => []],
+    ['title' => 'Internal wiring', 'text' => 'Inside the containers, connect to services using the variables already set in PHP:', 'copy' => $wiring],
+    ['title' => 'Environment', 'text' => 'Credentials and ports live in the .env file. After changing them, run:', 'copy' => ['make restart']],
+];
+
+$healthy = count($services) - $failures;
+
+$e = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
+// Ícones SVG inline (traço no estilo Lucide), para a página não depender de assets externos
+$icon = static function (string $name, string $class = ''): string {
+    $paths = [
+        'tea' => '<path d="M3 10h13v5a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5Z"/><path d="M16 12h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9.5 10V5.5"/><rect x="8" y="2" width="3" height="3.5" rx=".5"/>',
+        'terminal' => '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+        'copy' => '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+        'external' => '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+        'search' => '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+        'moon' => '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+        'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+        'server' => '<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 6h.01M6 18h.01"/>',
+        'code' => '<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',
+        'cpu' => '<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/>',
+        'network' => '<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/>',
+        'package' => '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+        'chevron' => '<path d="m18 15-6-6-6 6"/>',
+    ];
+
+    return sprintf(
+        '<svg class="icon %s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg>',
+        $class,
+        $paths[$name] ?? '',
+    );
+};
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to <?= $e($project['name']) ?></title>
+    <script>try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (_) {}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <style>
+        :root {
+            --bg: #f7f3eb; --surface-lowest: #fffdf8; --surface-low: #fbf7f0; --surface: #f5efe4; --surface-high: #f0e9dc; --surface-highest: #e6dfd1;
+            --text: #211f1c; --muted: #595349; --outline: #7a7469; --border: #ded5c3;
+            --primary: #2d5a3d; --on-primary: #ffffff; --secondary: #3f665c; --tertiary: #2d5a3d;
+            --error: #ba1a1a; --error-bg: #ffdad6; --glow: rgba(45, 90, 61, .18); --shadow: 0 1px 2px rgba(62, 59, 50, .06);
+            --sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            color-scheme: light;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0c1510; --surface-lowest: #07100b; --surface-low: #151e18; --surface: #19221b; --surface-high: #232c26; --surface-highest: #2e3730;
+                --text: #dbe5db; --muted: #bdcabd; --outline: #879488; --border: #2a362d;
+                --primary: #6bdc96; --on-primary: #00391d; --secondary: #72d7cb; --tertiary: #74db9d;
+                --error: #ffb4ab; --error-bg: #3b1714; --glow: rgba(107, 220, 150, .35); --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+                color-scheme: dark;
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: #0c1510; --surface-lowest: #07100b; --surface-low: #151e18; --surface: #19221b; --surface-high: #232c26; --surface-highest: #2e3730;
+            --text: #dbe5db; --muted: #bdcabd; --outline: #879488; --border: #2a362d;
+            --primary: #6bdc96; --on-primary: #00391d; --secondary: #72d7cb; --tertiary: #74db9d;
+            --error: #ffb4ab; --error-bg: #3b1714; --glow: rgba(107, 220, 150, .35); --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+            color-scheme: dark;
+        }
+        * { box-sizing: border-box; }
+        body { position: relative; margin: 0; overflow-x: clip; background: var(--bg); color: var(--text); font: 14px/1.45 var(--sans); -webkit-font-smoothing: antialiased; }
+        body::before { content: ""; position: absolute; top: -200px; left: -160px; width: 520px; height: 520px; border-radius: 50%; background: var(--glow); filter: blur(110px); opacity: .5; pointer-events: none; }
+        a { color: var(--secondary); }
+        code, .mono { font-family: var(--mono); font-size: 12px; }
+        button { font: inherit; color: inherit; cursor: pointer; }
+        .icon { width: 16px; height: 16px; flex-shrink: 0; }
+        .wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+        @media (min-width: 768px) { .wrap { padding: 0 32px; } }
+
+        .topbar { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--surface-lowest) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .topbar .wrap { height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; letter-spacing: -.015em; min-width: 0; }
+        .brand span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .brand .icon { color: var(--primary); width: 20px; height: 20px; }
+        .topbar-actions { display: flex; align-items: center; gap: 8px; }
+        .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: var(--surface-low); border: 1px solid var(--border); font: 500 11px/16px var(--mono); color: var(--muted); white-space: nowrap; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 8px var(--glow); flex-shrink: 0; }
+        .dot.pulse { animation: pulse 2s ease-in-out infinite; }
+        .dot.is-error { background: var(--error); box-shadow: none; }
+        @keyframes pulse { 50% { opacity: .45; } }
+        .icon-btn { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); }
+        .icon-btn:hover { color: var(--primary); }
+        .theme-sun { display: none; }
+        :root[data-theme="dark"] .theme-sun { display: block; }
+        :root[data-theme="dark"] .theme-moon { display: none; }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .theme-sun { display: block; }
+            :root:not([data-theme="light"]) .theme-moon { display: none; }
+        }
+
+        .hero { padding: 40px 0 32px; }
+        main { position: relative; }
+        .hero-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 20px; }
+        .eyebrow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .eyebrow .pill { text-transform: uppercase; letter-spacing: .06em; color: var(--primary); }
+        h1 { margin: 0 0 8px; font-size: clamp(28px, 5vw, 40px); line-height: 1.2; font-weight: 600; letter-spacing: -.03em; }
+        .grad { background: linear-gradient(90deg, var(--primary), var(--tertiary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .lead { margin: 0; font-size: 16px; color: var(--muted); line-height: 2; }
+        .tag { display: inline-block; padding: 1px 6px; border-radius: 4px; background: var(--surface-high); color: var(--primary); font: 13px var(--mono); line-height: 20px; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-high); font: 500 12px var(--mono); color: var(--text); text-decoration: none; transition: background .15s, box-shadow .15s; }
+        .btn:hover { background: var(--surface-highest); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); box-shadow: 0 0 16px var(--glow); }
+        .btn-primary:hover { background: var(--primary); box-shadow: 0 0 24px var(--glow); }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .grid { display: grid; gap: 16px; }
+        .metrics { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 28px; }
+        .card { background: var(--surface-low); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; box-shadow: var(--shadow); min-width: 0; }
+        .metric-head { display: flex; justify-content: space-between; align-items: center; font: 500 10px/14px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--outline); }
+        .metric-head .icon { color: var(--secondary); }
+        .metric-value { margin-top: 12px; font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -.025em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .metric-value small { font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--primary); }
+        .metric-value small.is-error { color: var(--error); }
+        .metric-foot { display: flex; justify-content: space-between; gap: 8px; font: 11px var(--mono); color: var(--muted); }
+        .metric-foot span:last-child { color: var(--primary); }
+
+        section { margin-top: 32px; }
+        .section-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+        .section-head h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.015em; }
+        .section-head h2 .icon { color: var(--primary); width: 20px; height: 20px; }
+        .label { padding: 2px 6px; border-radius: 4px; background: var(--surface-high); color: var(--primary); font: 600 10px/14px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+        .ghost { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; color: var(--muted); font: 11px var(--mono); }
+        .ghost:hover { color: var(--primary); }
+        .ghost[aria-expanded="false"] .icon { transform: rotate(180deg); }
+
+        .steps { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        .step { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+        .step h3 { margin: 0 0 4px; font: 500 13px var(--mono); color: var(--primary); }
+        .step p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+        .snippets { display: flex; flex-direction: column; gap: 4px; }
+        .copy { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid transparent; background: var(--surface-highest); color: var(--primary); font: 12px var(--mono); text-align: left; }
+        .copy span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .copy .icon { width: 14px; height: 14px; color: var(--outline); }
+        .copy:hover { border-color: var(--primary); }
+        .copy:hover .icon { color: var(--primary); }
+
+        .panel { padding: 0; overflow: hidden; }
+        .panel .section-head { margin: 0; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        .count { white-space: nowrap; padding: 1px 8px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); color: var(--primary); font: 500 11px var(--mono); }
+        .count.is-error { color: var(--error); }
+        .filter { position: relative; width: 100%; max-width: 300px; }
+        .filter .icon { position: absolute; left: 10px; top: 8px; color: var(--outline); }
+        .filter input { width: 100%; padding: 7px 12px 7px 34px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-lowest); color: var(--text); font: 12px var(--mono); }
+        .filter input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary), 0 0 10px var(--glow); }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 10px 16px; background: var(--surface); text-align: left; font: 500 10px/14px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--outline); }
+        td { padding: 12px 16px; border-top: 1px solid var(--border); vertical-align: middle; font: 12px var(--mono); }
+        tbody tr:hover { background: var(--surface); }
+        .service-name { font: 500 14px var(--sans); color: var(--text); }
+        .service-details { color: var(--muted); font-size: 11px; }
+        .service-error { margin-top: 4px; color: var(--error); font-size: 11px; word-break: break-word; }
+        .internal { color: var(--tertiary); }
+        .none { color: var(--outline); }
+        .ext { display: inline-flex; align-items: center; gap: 4px; text-underline-offset: 4px; word-break: break-all; }
+        .ext .icon { width: 13px; height: 13px; }
+        .status { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--primary); font: 500 10px/16px var(--mono); white-space: nowrap; }
+        .status.is-error { color: var(--error); background: var(--error-bg); border-color: transparent; }
+        .action { text-align: right; }
+        .action .copy { display: inline-flex; width: auto; padding: 4px 8px; font-size: 11px; background: var(--surface-high); }
+        .empty { padding: 16px; color: var(--muted); font: 12px var(--mono); }
+        @media (max-width: 767px) {
+            thead { display: none; }
+            tbody tr { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 16px; border-top: 1px solid var(--border); }
+            td { padding: 0; border: 0; }
+            td.cell-service { grid-column: 1; grid-row: 1; }
+            td.cell-status { grid-column: 2; grid-row: 1; justify-self: end; }
+            td.cell-internal, td.cell-external, td.action { grid-column: 1 / -1; text-align: left; }
+            td[data-label]::before { content: attr(data-label) " "; color: var(--outline); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+            td.cell-external:has(.none) { display: none; }
+        }
+
+        .bottom { grid-template-columns: 1fr; align-items: start; }
+        @media (min-width: 1024px) { .bottom.has-packages { grid-template-columns: 7fr 5fr; } }
+        .commands { display: flex; flex-direction: column; gap: 6px; }
+        .command { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-lowest); text-align: left; }
+        .command:hover { border-color: var(--primary); }
+        .command code { color: var(--primary); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .command code::before { content: "$ "; color: var(--outline); }
+        .command span { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+        .command .icon { width: 14px; height: 14px; color: var(--outline); }
+        @media (max-width: 600px) { .command span .desc { display: none; } }
+        .packages { display: flex; flex-direction: column; gap: 10px; }
+        .package .label { text-transform: none; letter-spacing: 0; }
+        .package p { margin: 6px 0 10px; color: var(--muted); font-size: 13px; }
+
+        footer { margin-top: 48px; border-top: 1px solid var(--border); background: var(--surface-lowest); }
+        footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-top: 12px; padding-bottom: 12px; font: 11px var(--mono); color: var(--muted); }
+        footer .wrap > span { display: inline-flex; align-items: center; gap: 8px; }
+
+        .toast { position: fixed; right: 16px; bottom: 16px; z-index: 20; padding: 8px 14px; border-radius: 6px; background: var(--surface-highest); border: 1px solid var(--border); color: var(--primary); font: 12px var(--mono); box-shadow: 0 8px 24px rgba(0, 0, 0, .25); opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: none; }
+        [hidden] { display: none !important; }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="wrap">
+        <div class="brand"><?= $icon('tea') ?><span><?= $e($project['name']) ?></span></div>
+        <div class="topbar-actions">
+            <span class="pill"><span class="dot pulse<?= $failures > 0 ? ' is-error' : '' ?>"></span>PHP <?= $e(PHP_VERSION) ?> • Nginx</span>
+            <button class="icon-btn" type="button" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme"><?= $icon('moon', 'theme-moon') ?><?= $icon('sun', 'theme-sun') ?></button>
+        </div>
+    </div>
+</header>
+
+<main class="wrap">
+    <div class="hero">
+        <div class="hero-head">
+            <div>
+                <div class="eyebrow">
+                    <span class="pill"><span class="dot pulse"></span>Development environment</span>
+                    <span class="pill"><?= $e($project['type']) ?> project</span>
+                </div>
+                <h1>Welcome to <span class="grad"><?= $e($project['name']) ?></span>!</h1>
+                <p class="lead">Your web project is running on <span class="tag">PHP <?= $e(PHP_VERSION) ?></span> with <span class="tag">Nginx</span> under timezone <span class="tag"><?= $e($project['timezone']) ?></span></p>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" type="button" data-copy="make shell"><?= $icon('terminal') ?>Attach shell</button>
+                <button class="btn" type="button" data-copy="make logs"><?= $icon('server') ?>Follow logs</button>
+            </div>
+        </div>
+
+        <div class="grid metrics">
+            <div class="card">
+                <div class="metric-head">Services <span class="dot<?= $failures > 0 ? ' is-error' : '' ?>"></span></div>
+                <div class="metric-value"><?= $healthy ?>/<?= count($services) ?> <small<?= $failures > 0 ? ' class="is-error"' : '' ?>><?= $failures > 0 ? 'degraded' : 'healthy' ?></small></div>
+                <div class="metric-foot"><span><?= $failures ?> with errors</span><span><?= $failures > 0 ? 'check the table' : 'all running' ?></span></div>
+            </div>
+            <div class="card">
+                <div class="metric-head">PHP runtime <?= $icon('code') ?></div>
+                <div class="metric-value"><?= $e(PHP_VERSION) ?></div>
+                <div class="metric-foot"><span><?= count($extensions) ?> extensions</span><span><?= !empty($opcache['opcache_enabled']) ? ($jit ? 'OPcache + JIT' : 'OPcache on') : 'OPcache off' ?></span></div>
+            </div>
+            <div class="card">
+                <div class="metric-head">Memory limit <?= $icon('cpu') ?></div>
+                <div class="metric-value"><?= $e($container['memory_limit']) ?></div>
+                <div class="metric-foot"><span>peak <?= $e((string) $container['memory_usage']) ?> MB</span><span>this request</span></div>
+            </div>
+            <div class="card">
+                <div class="metric-head">Container <?= $icon('network') ?></div>
+                <div class="metric-value" title="<?= $e($container['hostname']) ?>"><?= $e($container['hostname']) ?></div>
+                <div class="metric-foot"><span><?= $e($container['ip']) ?></span><span>php-fpm</span></div>
+            </div>
+        </div>
+    </div>
+
+    <section>
+        <div class="section-head">
+            <h2><span class="label">Configuration guide</span>Next steps</h2>
+            <button class="ghost" type="button" id="guide-toggle" aria-expanded="true" aria-controls="guide">Collapse <?= $icon('chevron') ?></button>
+        </div>
+        <div class="grid steps" id="guide">
+            <?php foreach ($nextSteps as $index => $step): ?>
+                <div class="card step">
+                    <div>
+                        <h3><?= sprintf('%02d', $index + 1) ?>. <?= $e($step['title']) ?></h3>
+                        <p><?= $e($step['text']) ?></p>
+                    </div>
+                    <?php if ($step['copy'] !== []): ?>
+                        <div class="snippets">
+                            <?php foreach ($step['copy'] as $snippet): ?>
+                                <button class="copy" type="button" data-copy="<?= $e($snippet) ?>"><span><?= $e($snippet) ?></span><?= $icon('copy') ?></button>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
+    <section class="card panel">
+        <div class="section-head">
+            <h2>Services &amp; routing
+                <span class="count"><?= $healthy ?> running</span>
+                <?php if ($failures > 0): ?><span class="count is-error"><?= $failures ?> with errors</span><?php endif; ?>
+            </h2>
+            <label class="filter"><?= $icon('search') ?><input type="search" id="service-filter" placeholder="Filter services (e.g. redis, 3306)" aria-label="Filter services"></label>
+        </div>
+        <table>
+            <thead><tr><th>Status</th><th>Service</th><th>Inside Docker</th><th>From your machine</th><th class="action">Action</th></tr></thead>
+            <tbody id="services">
+            <?php foreach ($services as $service): ?>
+                <tr data-service>
+                    <td class="cell-status">
+                        <?php if ($service['error'] === null): ?>
+                            <span class="status"><span class="dot"></span>OK</span>
+                        <?php else: ?>
+                            <span class="status is-error">✗ Fail</span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="cell-service">
+                        <div class="service-name"><?= $e($service['name']) ?></div>
+                        <div class="service-details"><?= $e($service['details']) ?></div>
+                        <?php if ($service['error'] !== null): ?><div class="service-error"><?= $e($service['error']) ?></div><?php endif; ?>
+                    </td>
+                    <td class="cell-internal internal" data-label="Docker"><?= $e($service['internal']) ?></td>
+                    <td class="cell-external" data-label="Host">
+                        <?php if (str_starts_with($service['external'], 'http')): ?>
+                            <a class="ext" href="<?= $e($service['external']) ?>" target="_blank" rel="noopener noreferrer"><?= $e($service['external']) ?><?= $icon('external') ?></a>
+                        <?php elseif ($service['external'] !== ''): ?>
+                            <?= $e($service['external']) ?>
+                        <?php else: ?>
+                            <span class="none">—</span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="action">
+                        <?php if (($service['command'] ?? null) !== null): ?>
+                            <button class="copy" type="button" data-copy="<?= $e($service['command']) ?>"><span><?= $e($service['command']) ?></span><?= $icon('copy') ?></button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <div class="empty" id="services-empty" hidden>No service matches the filter.</div>
+    </section>
+
+    <div class="grid bottom<?= $packages !== [] ? ' has-packages' : '' ?>">
+        <section>
+            <div class="section-head">
+                <h2><?= $icon('terminal') ?>Useful commands</h2>
+                <span class="ghost">Makefile helpers</span>
+            </div>
+            <div class="card commands">
+                <?php foreach ($commands as $command => $description): ?>
+                    <button class="command" type="button" data-copy="<?= $e($command) ?>"><code><?= $e($command) ?></code><span><span class="desc"><?= $e($description) ?></span><?= $icon('copy') ?></span></button>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <?php if ($packages !== []): ?>
+        <section>
+            <div class="section-head">
+                <h2><?= $icon('package') ?>Suggested packages</h2>
+                <span class="ghost">For the services in use</span>
+            </div>
+            <div class="packages">
+                <?php foreach ($packages as $package => $description): ?>
+                    <div class="card package">
+                        <span class="label"><?= $e($package) ?></span>
+                        <p><?= $e($description) ?></p>
+                        <button class="copy" type="button" data-copy="make composer c=&quot;require <?= $e($package) ?>&quot;"><span>make composer c="require <?= $e($package) ?>"</span><?= $icon('copy') ?></button>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+    </div>
+</main>
+
+<footer>
+    <div class="wrap">
+        <span><span class="dot"></span><?= $e($project['name']) ?> • local development</span>
+        <span>PHP <?= $e(PHP_VERSION) ?> • <?= $e($container['hostname']) ?></span>
+    </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+    const root = document.documentElement;
+    const toast = document.getElementById('toast');
+    let timer;
+
+    const notify = (message) => {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(timer);
+        timer = setTimeout(() => toast.classList.remove('show'), 2000);
+    };
+
+    // navigator.clipboard só existe em contexto seguro (localhost/HTTPS); fora dele usa execCommand
+    const copy = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch (_) {
+            const area = Object.assign(document.createElement('textarea'), { value: text });
+            area.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand('copy');
+            area.remove();
+        }
+        notify('Copied: ' + text);
+    };
+
+    document.addEventListener('click', (event) => {
+        const target = event.target.closest('[data-copy]');
+        if (target) copy(target.dataset.copy);
+    });
+
+    const rows = document.querySelectorAll('#services [data-service]');
+    document.getElementById('service-filter').addEventListener('input', (event) => {
+        const query = event.target.value.trim().toLowerCase();
+        let visible = 0;
+        rows.forEach((row) => {
+            row.hidden = !row.textContent.toLowerCase().includes(query);
+            visible += row.hidden ? 0 : 1;
+        });
+        document.getElementById('services-empty').hidden = visible > 0;
+    });
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        root.dataset.theme = dark ? 'light' : 'dark';
+        try { localStorage.setItem('theme', root.dataset.theme); } catch (_) {}
+    });
+
+    const guideToggle = document.getElementById('guide-toggle');
+    guideToggle.addEventListener('click', () => {
+        const expanded = guideToggle.getAttribute('aria-expanded') === 'true';
+        guideToggle.setAttribute('aria-expanded', String(!expanded));
+        guideToggle.firstChild.textContent = expanded ? 'Expand ' : 'Collapse ';
+        document.getElementById('guide').hidden = expanded;
+    });
+})();
+</script>
+</body>
+</html>
