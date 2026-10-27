@@ -1,6 +1,15 @@
 # Arquivos gerados pelo setup
 .env
 compose.yml
+composer.json
+composer.lock
+src/
+tests/
+public/
+commands/
+phpunit.xml.dist
+phpstan.neon.dist
+.php-cs-fixer.dist.php
 
 # PHP / Node
 vendor/
