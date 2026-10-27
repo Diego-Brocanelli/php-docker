@@ -72,6 +72,30 @@ Em `--services`, informe uma lista separada por vírgulas (`mailpit`, `rabbitmq`
 
 > ⚠️ OpenSearch e Elasticsearch precisam de ~1 GB de RAM e de `vm.max_map_count` ≥ 262144 (`sudo sysctl -w vm.max_map_count=262144`).
 
+## 🖼️ Exemplos
+
+Ao final do setup é criado um ponto de entrada de boas-vindas de acordo com o tipo de projeto, mostrando o status real da conexão com cada serviço, os próximos passos e os comandos úteis.
+
+> As imagens abaixo foram geradas com dados fictícios (projeto `Acme Store` com PostgreSQL, Redis, Mailpit, RabbitMQ, worker e scheduler).
+
+### Web
+
+`--type web`: página HTML servida pelo Nginx em `public/index.php`, com status dos serviços, filtro, tema claro/escuro e botões para copiar os comandos.
+
+![Exemplo do projeto web](docs/images/examples/web.png)
+
+### API
+
+`--type api`: resposta JSON em `public/index.php`, com HTTP `200` quando todos os serviços respondem e `503` quando algum falha (útil como health check).
+
+![Exemplo do projeto API](docs/images/examples/api.png)
+
+### CLI
+
+`--type cli`: sem Nginx; o resumo é exibido no terminal por `commands/welcome.php`.
+
+![Exemplo do projeto CLI](docs/images/examples/cli.png)
+
 ## 🛠️ Comandos básicos
 
 Use o `Makefile` para gerenciar os containers:
